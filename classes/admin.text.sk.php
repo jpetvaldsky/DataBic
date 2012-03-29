@@ -1,0 +1,46 @@
+<?
+	$GLOBALS["menu"] = array(
+		"MAP" => "Mapa webu",
+		"MODUL" => "Datové moduly",
+		"IMAGES" => "Obrázky",
+		"URLS" => "Odkazy",
+		"FILES" => "Soubory",
+		"TXT" => "Texty",
+		"SET" => "Nastavení",
+		"LANG" => "Jazyky",
+		"LOGOUT" => "Odhlásit se"
+	);
+
+	$GLOBALS["msg"] = array(
+		"NORES" => "Žádný výsledek",
+		"EMPTY" => "V modulu nejsou žadné data.",
+		"ERR" => "Nespecifikovaná chyba",
+		"NEW" => "Přidat nový záznam",
+		"INS-OK" => "Nový záznam byl přidán.",
+		"UPD-OK" => "Editace proběhla v pořádku.",
+		"MADD-OK" => "Modul byl přidán na stránku.",
+		"DEL" => "Smazat záznam",
+		"DEL_C" => "Opravdu chcete smazat tento záznam?",
+		"DEL-OK" => "Záznam byl vymazán.",
+		"EDIT" => "Editovat záznam",
+		"ORD" => "Pořadí",
+		"STAT" => "Status",
+		"TOOLS" => "Nástroje",
+		"ADD" => "Přidat",
+		"SAVE" => "Uložit",
+		"CLOSE" => "Zavřít",
+		"ACTIVE" => "Aktivovat",
+		"DEACTIVE" => "Deaktivovat",
+		"FOLD-ADD" => "Přidat podsložku",
+		"FOLD-EDIT" => "Editovat složku",
+		"FOLD-DEL" => "Smazat složku a všechna data v ní obsažená",
+		"FOLD-NAME" => "Název složky",
+		"FOLD-P" => "Nadřazená složka",
+		"TITLE" => "Popiska souboru",
+		"CHOOSE" => "Vyberte soubor",
+		"URL" => "Adresa odkazu",
+		"FWD" => "Přesunout dopředu",
+		"BCKWD" => "Přesunout dozadu",
+		"UNLINK" => "Odebrat",
+		"EDIT_DESC" => "Editovat popisek"
+	);

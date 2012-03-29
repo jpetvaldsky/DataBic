@@ -1,0 +1,15 @@
+<?php
+class Modul_001 {
+	function Modul_001(){
+		$this->name = "Definice stránky";
+		$this->superadmin = false;
+		$this->service = false;
+		$this->items = array(
+			array("Nadpis","title","TextRow",255,false,true),
+			array("Šablona","template","TextRow",255,false,true),
+			array("SEO","line-dot","Splitter","#FF0000"),
+			array("Klíčová slova","meta_keywords","TwoLines",2000,false,true),
+			array("Meta description","meta_description","ShortText",200,false,true)
+		);
+	}
+}
