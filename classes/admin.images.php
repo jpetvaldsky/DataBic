@@ -111,9 +111,6 @@ class Images {
 		$row = Images::ImageById($_POST["image_id"]);
 		if ($filename != ""){
 			Images::checkOldImages($GLOBALS["images_folder"],$row["filename"]);
-			/*if (file_exists($GLOBALS["images_folder"]."Cache_Admin/".$row["filename"])){
-				unlink($GLOBALS["images_folder"]."Cache_Admin/".$row["filename"]);
-			}*/
 			if (file_exists($GLOBALS["images_folder"].$row["filename"])){
 				unlink($GLOBALS["images_folder"].$row["filename"]);
 			}
@@ -134,49 +131,68 @@ class Images {
 
 
 	function NewImage($folder_id){
-		$output .= "<h3>".$GLOBALS["msg"]["NEW"]."</h3>";
+//		$output .= "<h3>".."</h3>";
 		$output .= Forms::FileUpload("file_item",$GLOBALS["msg"]["CHOOSE"]);
 		$output .= Forms::TextRow("title","",255,$GLOBALS["msg"]["TITLE"],"iText",false);
 		$output .= Forms::Hidden("folder_id",$folder_id);
 		$output .= Forms::Hidden("action","list");
 		$output .= Forms::Hidden("do","insert_image");
 		$output .= Forms::Hidden("type","images");
-		$output .= Forms::Submit("submit",$GLOBALS["msg"]["SAVE"]);
-		return Forms::Form($output)."<hr />";
+
+		$buttons .= Forms::Submit("submit",$GLOBALS["msg"]["SAVE"]);
+		
+		$output .= Forms::FormActions($buttons);
+		
+		return Forms::Form($output,$GLOBALS["msg"]["NEW"])."<hr />";
 	}
 
 	function EditImage($folder_id){
 		$row = Images::ImageById($_GET["id"]);
 		if ($row != NULL){
-			$output .= "<h3>".$GLOBALS["msg"]["EDIT"]."</h3>";
-			$output .= Images::AdminThumb($row)."<hr class=\"clear\" />";
-			$output .= Forms::FileUpload("file_item",$GLOBALS["msg"]["CHOOSE"]);
-			$output .= Forms::TextRow("title",$row["title"],255,$GLOBALS["msg"]["TITLE"],"iText",false);
+			//$output .= "<h3>".$GLOBALS["msg"]["EDIT"]."</h3>";
+			$firstColumn = Templates::ImageList(Images::AdminThumb($row,false,true),false);
+			$secondColumn = Forms::FileUpload("file_item",$GLOBALS["msg"]["CHOOSE"]);
+			$secondColumn .= Forms::TextRow("title",$row["title"],255,$GLOBALS["msg"]["TITLE"],"iText",false);
 			$folders = new Folders();
 			$option = $folders->FillFolderSelect("images");
-			$output .= Forms::Select("folder_id",$folder_id,255,$GLOBALS["msg"]["FOLD-P"],$option,"shortField");
+			$secondColumn .= Forms::Select("folder_id",$folder_id,255,$GLOBALS["msg"]["FOLD-P"],$option,"shortField");
 			//$output .= Forms::Hidden("folder_id",$folder_id);
-			$output .= Forms::Hidden("image_id",$_GET["id"]);
-			$output .= Forms::Hidden("action","list");
-			$output .= Forms::Hidden("do","update_image");
-			$output .= Forms::Hidden("type","images");
-			$output .= Forms::Submit("submit",$GLOBALS["msg"]["SAVE"]);
-			return Forms::Form($output)."<hr />";
+			$secondColumn .= Forms::Hidden("image_id",$_GET["id"]);
+			$secondColumn .= Forms::Hidden("action","list");
+			$secondColumn .= Forms::Hidden("do","update_image");
+			$secondColumn .= Forms::Hidden("type","images");
+			//$output .= Forms::Submit("submit",$GLOBALS["msg"]["SAVE"]);
+			
+			$output = Templates::TwoColumnsFluid($secondColumn,$firstColumn,9,3,true);
+			
+			$buttons .= Forms::Submit("submit",$GLOBALS["msg"]["SAVE"]);		
+			$output .= Forms::FormActions($buttons);
+			
+			return Forms::Form($output,$GLOBALS["msg"]["EDIT"])."<hr />";
 		}
 	}
 
-	function AdminThumb($data,$ajax=false){
+	function AdminThumb($data,$ajax=false,$showSimple=false){
 		list($fName,$extension) = explode(".",$data["filename"]);
-		$tResult =  Images::createThumbnail($data["filename"],$fName.".jpg","Cache_Admin/",80,80,80);
+		$tResult =  Images::createThumbnail($data["filename"],$fName.".jpg","Cache_Admin/",100,100,80);
 		$imgPath = $GLOBALS["images_folder"]."Cache_Admin/".$fName.".jpg";//$data["filename"];
-		$output = Templates::ImageBox($imgPath,$data["title"],$data["id"],$data["folder_id"],$data["subId"],$ajax);
+		if (!$showSimple)
+		{
+			$output = Templates::ImageBox($imgPath,$data["title"],$data["id"],$data["folder_id"],$data["subId"],$ajax);
+		}
+		else
+		{
+			$output = Templates::ImageDropBox($imgPath,$data["title"],$data["id"]);
+		}
 		return $output;
 	}
+
+
 
 	function AdminThumbById($id){
 		$data = Images::ImageById($id);
 		list($fName,$extension) = explode(".",$data["filename"]);
-		$tResult =  Images::createThumbnail($data["filename"],$fName.".jpg","Cache_Admin/",80,80,80);
+		$tResult =  Images::createThumbnail($data["filename"],$fName.".jpg","Cache_Admin/",100,100,80);
 		$imgPath = $GLOBALS["images_folder"]."Cache_Admin/".$fName.".jpg";//$data["filename"];
 		return $imgPath;
 	}
@@ -184,6 +200,7 @@ class Images {
 
 	function FtpUpload(){
 		$dir = $GLOBALS["images_folder"]."Upload/";
+		verifyAvaiableDirPath($dir);
 		$d = dir($dir);
 		while($entry=$d->read()) {			
 			if (($entry != ".") &&  ($entry != "..")){

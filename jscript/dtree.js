@@ -42,27 +42,27 @@ function dTree(objName) {
 		submenu				: true
 	}
 	this.icon = {
-		root				: 'i/sitemap/base.gif',
-		folder			: 'i/sitemap/folder.gif',
-		folderOpen	: 'i/sitemap/folderopen.gif',
-		node				: 'i/sitemap/page.gif',
+		root				: 'i/sitemap-new/base.png',
+		folder			: 'i/sitemap-new/folder.png',
+		folderOpen	: 'i/sitemap-new/folderopen.png',
+		node				: 'i/sitemap-new/page.png',
 		empty				: 'i/sitemap/empty.gif',
-		line				: 'i/sitemap/line.gif',
-		hline				: 'i/sitemap/hline.gif',
-		join				: 'i/sitemap/join.gif',
-		joinBottom	: 'i/sitemap/joinbottom.gif',
-		plus				: 'i/sitemap/plus.gif',
-		plusBottom	: 'i/sitemap/plusbottom.gif',
-		minus				: 'i/sitemap/minus.gif',
-		minusBottom	: 'i/sitemap/minusbottom.gif',
-		nlPlus			: 'i/sitemap/nolines_plus.gif',
-		nlMinus			: 'i/sitemap/nolines_minus.gif',
-		add				: 'i/sitemap/add.gif',
-		edit				: 'i/sitemap/edit.gif',
-		del				: 'i/sitemap/delete.gif',
-		active			: 'i/sitemap/active.gif',
-		neactive		: 'i/sitemap/neactive.gif',
-		splitter			: 'i/sitemap/split.gif'
+		line				: 'i/sitemap-new/line.png',
+		hline				: 'i/sitemap-new/hline.png',
+		join				: 'i/sitemap-new/join.png',
+		joinBottom	: 'i/sitemap-new/joinbottom.png',
+		plus				: 'i/sitemap-new/plus.png',
+		plusBottom	: 'i/sitemap-new/plusbottom.png',
+		minus				: 'i/sitemap-new/minus.png',
+		minusBottom	: 'i/sitemap-new/minusbottom.png',
+		nlPlus			: 'i/sitemap-new/nolines_plus.png',
+		nlMinus			: 'i/sitemap-new/nolines_minus.png',
+		add					: 'i/sitemap-new/add.png',
+		edit				: 'i/sitemap-new/edit.png',
+		del					: 'i/sitemap-new/delete.png',
+		active			: 'i/sitemap-new/active.png',
+		neactive		: 'i/sitemap-new/neactive.png',
+		splitter		: 'i/sitemap-new/split.png'
 	};
 	this.obj = objName;
 	this.aNodes = [];
@@ -359,14 +359,14 @@ dTree.prototype.nodeMenu = function(nodeId,parentId){
 	nodeId = nodeId + 1;
 	parentId = parentId + 1;
 	var str = '';
-	str += '<div id="op'+nodeId+'" class="hidden">';
-	str +=  '<a href="?type=webmap&do=new&parentId='+nodeId+'" onclick="javascript:newNode(\''+nodeId+'\');return true;"><img src="' + this.icon.add + '" alt="Přidat podstránku" /></a>';
+	str += '<div id="op'+nodeId+'" class="nodeOption hidden">';
+	str +=  '<a href="?type=webmap&do=new&parentId='+nodeId+'" onclick="javascript:newNode(\''+nodeId+'\');return true;" title="Add subpage" rel="tooltip"><img src="' + this.icon.add + '" alt="Add subpage" /></a>';
 	str +=  '<img src="' + this.icon.splitter+ '" alt="" />';
-	str +=  '<a href="?type=webmap&do=edit&nodeId='+nodeId+'" onclick="javascript:editNode(\''+nodeId+'\');return true;"><img src="' + this.icon.edit + '" alt="Editovat" /></a>';
+	str +=  '<a href="?type=webmap&do=edit&nodeId='+nodeId+'" onclick="javascript:editNode(\''+nodeId+'\');return true;" title="Edit" rel="tooltip"><img src="' + this.icon.edit + '" alt="Edit" /></a>';
 	if (nodeId != 1)
 	{
 		str +=  '<img src="' + this.icon.splitter+ '" alt="" />';
-		str +=  '<a href="?type=webmap&do=delete&amp;nodeId='+nodeId+'" onclick="return confirm(\'Opravdu smazat?\');"><img src="' + this.icon.del+ '" alt="Smazat" /></a>';
+		str +=  '<a href="?type=webmap&do=delete&amp;nodeId='+nodeId+'" onclick="return confirm(\'Are you sure?\');"  title="Delete" rel="tooltip"><img src="' + this.icon.del+ '" alt="Delete" /></a>';
 	}
 	str += '</div>';
 	//

@@ -3,7 +3,7 @@
 class Languages extends Admin {
 
 	function init(){
-		$output = Templates::LangListHeader();
+		$output = '';
 		$action = $_GET["do"];
 		if (isSet($_POST["do"])) $action = $_POST["do"];
 		switch($action){
@@ -56,21 +56,26 @@ class Languages extends Admin {
 		$check = true;
 		if ($id == -1){
 			$action="insert";
+			$legend = $GLOBALS["msg"]["NEW"];
 		} else {			
 			$data =  $this->recordById($id);
+			$legend = $GLOBALS["msg"]["EDIT"].': '.$data["lang_name"];
 		}
 		if ($data["active"] == "0") $check=false;
-		if ($id != -1) $output .= Forms::Hidden("id",$id);
-		$output .= Forms::getForm("TextRow","lang_id",$data["lang_id"],2,"Identifikátor");
-		$output .= Forms::getForm("TextRow","lang_name",$data["lang_name"],100,"Název jazyka");
+
+		$output .= Forms::getForm("TextRow","lang_id",$data["lang_id"],2,$GLOBALS["msg"]["LANG_ID"]);
+		$output .= Forms::getForm("TextRow","lang_name",$data["lang_name"],100,$GLOBALS["msg"]["LANG_DESC"]);
 		$output .= Forms::getForm("CheckBox","active","1",0,$GLOBALS["msg"]["ACTIVE"],$check);
+
+		if ($id != -1) $output .= Forms::Hidden("id",$id);
 		$output .= Forms::Hidden("post_action",$action);
 		$output .= Forms::Hidden("lang_id_prev",$data["lang_id"]);
 		$output .= Forms::Hidden("type","languages");
-		$output .= Forms::Submit("submit",$GLOBALS["msg"]["SAVE"]);
-		$output .= Forms::Button("close",$GLOBALS["msg"]["CLOSE"],"?type=languages");
 
-		return Forms::Form($output);
+		$buttons = Forms::Submit("submit",$GLOBALS["msg"]["SAVE"]);
+		$buttons .= Forms::Button("close",$GLOBALS["msg"]["CLOSE"],"?type=languages");
+		$output .= Forms::FormActions($buttons);
+		return Forms::Form($output,$legend);
 	}
 
 	function recordById($id){
@@ -155,10 +160,10 @@ function insert(){
 	function listHeadline(){
 		//array("ID",20,"uniq_id"),
 		$headItems = array(			
-			array("Identifikátor",60,"lang_id"),
-			array("Název jazyka","","lang_name")
+			array($GLOBALS["msg"]["LANG_ID"],60,"lang_id"),
+			array($GLOBALS["msg"]["LANG_DESC"],"","lang_name")
 		);
-		array_push($headItems,array($GLOBALS["msg"]["STAT"],60,"active"));
+		array_push($headItems,array($GLOBALS["msg"]["STAT"],60,"active","centered"));
 		$output = Templates::ModulHeadlineList($id,$headItems);
 		return $output;
 	}

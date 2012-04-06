@@ -1,7 +1,9 @@
 <?
 
 class Modules extends Admin {
+	
 	var $modulList = array();
+	
 	function Modules($sa){
 		if (is_dir($GLOBALS["modul_folder"])){
 			$d = dir($GLOBALS["modul_folder"]);
@@ -254,9 +256,14 @@ class Modules extends Admin {
 		}
 	}
 
-	function listModul($name){
+	function listModulNavigation(&$name){
 		if (is_array($this->modulList)){				
 			foreach($this->modulList as $modulNum){
+				if ($name == '')
+				{
+					$name = $modulNum;
+				}
+				
 				$modulName = "Modul_".$modulNum;
 				$modul = new $modulName;
 				$ico = "Modul/".$modulNum.".gif";
@@ -265,10 +272,18 @@ class Modules extends Admin {
 			}
 		}
 		$output = Templates::ModulMenu($output);
+		return $output;
+	}
+
+	function listModul($name,&$header,&$headerLink){
 		if (($name != "") && isSet($name)){
 			$modulName = "Modul_".$name;
 			$modul = new $modulName;
-			$output .= Templates::ModulListHeader($modul->name,$name);
+
+			$headerLink = '?type=modul&name='.$name;	
+			$header = Templates::topHeader($modul->name,$headerLink);
+			$headerLink = $headerLink."&amp;action=new";
+			
 			$action = $_GET["action"];
 			if (isSet($_POST["action"])) $action = $_POST["action"];
 			switch ($action){
@@ -290,7 +305,7 @@ class Modules extends Admin {
 	function getModulForm($nodeId){
 		$option = array();
 		$node = $GLOBALS["sitemap"]->getById($nodeId);
-		$nodeArray = split(",",$node["moduls"]);
+		$nodeArray = explode(",",$node["moduls"]);
 		if (is_array($this->modulList)){				
 			foreach($this->modulList as $modulNum){
 				$modulName = "Modul_".$modulNum;
@@ -369,23 +384,28 @@ class Modules extends Admin {
 							} else {
 								$langRow = false;
 							}
-							if ($langRow){
-								$output .= Templates::ModulLangSpliter($count);
-							}
 						}
 						if ($langRow){
-							$output .= $this->ModulDataRow($data,$modulId,$count,$ajax,$onSite);							
+							$dropRows = 0;
+							if ($prevID != $row["row_id"])
+							{
+								$dropRows = count($langData);
+								$prevID = $row["row_id"];
+							} 
+						
+							$output .= $this->ModulDataRow($data,$modulId,$count,$ajax,$onSite,$dropRows);							
 						}
 					}
 					$count++;
 				}
+				$output = Templates::ModulListTable($output);
 			} else {
-				$output .= $GLOBALS["msg"]["EMPTY"];//."<br />".$sql_query;
+				$output = '<div class="alert alert-info"><strong>'.$GLOBALS["msg"]["EMPTY"].'</strong></div>';//$sql_query
 			}
 		} else {
-			$output .= $GLOBALS["msg"]["ERR"].mysql_error();
+			$output = '<div class="alert alert-error"><h4>'.$GLOBALS["msg"]["ERR"].'</h4> '.mysql_error().'</div>';
 		}
-		return Templates::ModulListTable($output);
+		return $output;
 	}
 
 	function listHeadline($id,$onSite=false){
@@ -401,7 +421,7 @@ class Modules extends Admin {
 		$count = 0;
 		foreach ($modul->items as $row){
 			$count++;
-			if ($row[2] != "Linked")//&& ($row[2] != "CheckBox")($row[2] != "Option") &&
+			if ($row[2] != "Linked" && $row[2] != "Splitter")//&& ($row[2] != "CheckBox")($row[2] != "Option") &&
 				array_push($headItems,array($row[0],"",$row[1]));			
 			if ($count == 4) break;
 		}
@@ -410,7 +430,7 @@ class Modules extends Admin {
 		return $output;
 	}
 
-	function ModulDataRow($row,$id,$count,$ajax,$onSite=false){
+	function ModulDataRow($row,$id,$count,$ajax,$onSite=false,$dropRows=0){
 		$modulName = "Modul_".$id;
 		$modul = new $modulName;
 		$maxOrder = "SELECT MAX(`order`) FROM `modul_".$id."_data`";
@@ -419,7 +439,7 @@ class Modules extends Admin {
 		$maxOrd = false;
 		if ($row["order"] == $mo[0]) $maxOrd = true;
 		if (!$ajax)
-			return Templates::ModulDataRow($id,$row,$count,$modul->items,$onSite,$maxOrd);		
+			return Templates::ModulDataRow($id,$row,$count,$modul->items,$onSite,$maxOrd,$dropRows);		
 		else
 			return Templates::ModulLinkDataRow($id,$row,$count,$modul->items);		
 	}
@@ -500,11 +520,20 @@ class Modules extends Admin {
 		$modul = new $modulName;
 		$data = $this->ModulDataById($name,$id);
 		$action = "update";
+		$legend = "";
+		
 		$check = true;
+		
 		if ($id == -1){
 			$action="insert";
 			$rowid = $this->getRowId($name,-1);
+			$legend = $GLOBALS["msg"]["NEW"];			
 		}
+		else
+		{
+			$legend = $GLOBALS["msg"]["EDIT"].': '.$id;				
+		}
+		
 		if (is_array($modul->items)){
 			foreach ($modul->items as $row){	
 				$thisCheck = false;
@@ -570,10 +599,14 @@ class Modules extends Admin {
 				$closeLink = "?type=modul&name=".$name."&action=list";
 			}
 			$output .= Forms::Hidden("name",$name);
-			$output .= Forms::Submit("submit",$GLOBALS["msg"]["SAVE"]);
-			$output .= Forms::Button("close",$GLOBALS["msg"]["CLOSE"],$closeLink);
+			
+			$buttons = Forms::Submit("submit",$GLOBALS["msg"]["SAVE"]);
+			$buttons .= Forms::Button("close",$GLOBALS["msg"]["CLOSE"],$closeLink);
+			$output .= Forms::FormActions($buttons);
+
 		}
-		return Forms::Form($output);
+		
+		return Forms::Form($output,$legend);
 	}
 	/*
 		MODUL LANGUAGES

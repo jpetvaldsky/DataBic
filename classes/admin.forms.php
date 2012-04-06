@@ -2,10 +2,36 @@
 
 class Forms {
 
-	function Form($data){
+	function Form($data,$legend=''){
 		$output = '
-			<form enctype="multipart/form-data" action="index.php" method="post">
+			<form enctype="multipart/form-data" action="index.php" method="post" class="form-horizontal">
+				<fieldset>';
+		if ($legend != '')
+		{
+			$output .= '
+					<legend>'.$legend.'</legend>';
+					
+		}
+		$output .= '		
 				'.$data.'
+				</fieldset>
+			</form>';
+		return $output;
+	}
+	
+	function FormSimple($data,$legend=''){
+		$output = '
+			<form enctype="multipart/form-data" action="index.php" method="post" class="form-vertical">
+				<fieldset>';
+		if ($legend != '')
+		{
+			$output .= '
+					<legend>'.$legend.'</legend>';
+					
+		}
+		$output .= '		
+				'.$data.'
+				</fieldset>
 			</form>';
 		return $output;
 	}
@@ -46,56 +72,122 @@ class Forms {
 				break;
 		}
 	}
+	
+	function formActions($buttons)
+	{
+		return
+		'
+			<div class="form-actions">		
+				'.$buttons.'
+			</div>
+		';
+	}
 
 	function TextRow($name,$value,$length,$desc,$class="iText",$disabled){
-		if ($disabled) 	$dis = ' disabled="disabled"';
+		$dis = "";
+		if ($disabled) 	$dis = ' disabled';
 		return '
-		<div class="label" for="i'.$name.'">'.$desc.': </div><input class="'.$class.'" type="text" id="i'.$name.'" name="'.$name.'" value="'.htmlspecialchars($value).'" length="'.$length.'"'.$dis.' /><br />';
+					<div class="control-group">
+						<label class="control-label" for="i'.$name.'">'.$desc.': </label>
+            <div class="controls">
+              <input type="text" class="input-xlarge'.$dis.'" id="i'.$name.'" name="'.$name.'" value="'.htmlspecialchars($value).'" length="'.$length.'" '.$dis.'>			              
+            </div>
+          </div>';
+		
 	}
 
 	function Number($name,$value,$length,$desc,$disabled){
-		if ($disabled) 	$dis = ' disabled="disabled"';
+		$dis = "";
+		if ($disabled) 	$dis = ' disabled';
 		return '
-		<div class="label" for="i'.$name.'">'.$desc.': </div><input class="iText" type="text" id="i'.$name.'" name="'.$name.'" value="'.$value.'" length="'.$length.'"'.$dis.' /><br />';
+					<div class="control-group">
+						<label class="control-label" for="i'.$name.'">'.$desc.': </label>
+            <div class="controls">
+              <input type="text" class="input-medium'.$dis.'" id="i'.$name.'" name="'.$name.'" value="'.htmlspecialchars($value).'" length="'.$length.'" '.$dis.'>			              
+            </div>
+          </div>';
 	}
 
 	function Year($name,$value,$length,$desc,$disabled){
-		if ($disabled) 	$dis = ' disabled="disabled"';
+		$dis = "";
+		if ($disabled) 	$dis = ' disabled';
 		return '
-		<div class="label" for="i'.$name.'">'.$desc.': </div><input class="iText" type="text" id="i'.$name.'" name="'.$name.'" value="'.$value.'" length="'.$length.'"'.$dis.' /><br />';
+					<div class="control-group">
+						<label class="control-label" for="i'.$name.'">'.$desc.': </label>
+            <div class="controls">
+              <input type="text" class="input-small'.$dis.'" id="i'.$name.'" name="'.$name.'" value="'.htmlspecialchars($value).'" length="'.$length.'" '.$dis.'>			              
+            </div>
+          </div>';
 	}
 
 	function DateInp($name,$value,$length,$desc,$disabled){
-		if ($disabled) 	$dis = ' disabled="disabled"';
+		$dis = "";
+		if ($disabled) 	$dis = ' disabled';
 		return '
-		<div class="label" for="i'.$name.'">'.$desc.': </div><input class="iText" type="text" id="i'.$name.'" name="'.$name.'" value="'.$value.'" length="'.$length.'"'.$dis.' /><br />';
+					<div class="control-group">
+						<label class="control-label" for="i'.$name.'">'.$desc.': </label>
+            <div class="controls">
+              <input type="text" class="input-medium'.$dis.'" id="i'.$name.'" name="'.$name.'" value="'.htmlspecialchars($value).'" length="'.$length.'" '.$dis.'>			              
+            </div>
+          </div>';
 	}
 
 	function TimeStamp($name,$value,$length,$desc,$disabled){
-		if ($disabled) 	$dis = ' disabled="disabled"';
+		$dis = "";
+		if ($disabled) 	$dis = ' disabled';
 		return '
-		<div class="label" for="i'.$name.'">'.$desc.': </div><input class="iText" type="text" id="i'.$name.'" name="'.$name.'" value="'.$value.'" length="'.$length.'"'.$dis.' /><br />';
+					<div class="control-group">
+						<label class="control-label" for="i'.$name.'">'.$desc.': </label>
+            <div class="controls">
+              <input type="text" class="input-medium'.$dis.'" id="i'.$name.'" name="'.$name.'" value="'.htmlspecialchars($value).'" length="'.$length.'" '.$dis.'>			              
+            </div>
+          </div>';
 	}
 
 	function CheckBox($name,$value,$length,$desc,$check){
-		if ($check) $checked = ' checked="checked"';
+		if ($check) $checked = ' checked';
+		/*
 		return '
-		<div class="label" for="i'.$name.'">'.$desc.': </div><input type="checkbox" id="i'.$name.'" name="'.$name.'" value="'.$value.'"'.$checked.'/><br />';
+		<div class="label" for="i'.$name.'">'.$desc.': </div><input type="checkbox" id="i'.$name.'" name="'.$name.'" value="'.$value.'"'.$checked.'/><br />';*/
+		return '
+			          <div class="control-group">
+			            <label class="control-label" for="i'.$name.'">'.$desc.': </label>
+			            <div class="controls">
+			              <label class="checkbox">
+			                <input type="checkbox" id="i'.$name.'" name="'.$name.'" value="'.$value.'"'.$checked.'>
+			              </label>
+			            </div>
+			          </div>';
 	}
 	
 	function TwoLines($name,$value,$length,$desc){
 		return '
-		<div class="label" for="i'.$name.'">'.$desc.': </div><textarea class="twoLines" id="i'.$name.'" name="'.$name.'" length="'.$length.'">'.$value.'</textarea><br />';
+								<div class="control-group">
+			            <label class="control-label" for="i'.$name.'">'.$desc.': </label>
+			            <div class="controls">
+			              <textarea class="span6 twoLines" id="i'.$name.'" name="'.$name.'" length="'.$length.'" rows="2">'.$value.'</textarea>
+			            </div>
+			          </div>';
 	}
 
 	function ShortText($name,$value,$length,$desc){
 		return '
-		<div class="label" for="i'.$name.'">'.$desc.': </div><br /><textarea class="shortText" id="i'.$name.'" name="'.$name.'" length="'.$length.'">'.$value.'</textarea><br />';
+								<div class="control-group">
+			            <label class="control-label" for="i'.$name.'">'.$desc.': </label>
+			            <div class="controls">
+			              <textarea class="span6 shortText" id="i'.$name.'" name="'.$name.'" length="'.$length.'" rows="4">'.$value.'</textarea>
+			            </div>
+			          </div>';		
 	}
 
 	function Text($name,$value,$length,$desc){
 		return '
-		<div class="label" for="i'.$name.'">'.$desc.': </div><br /><textarea class="longText" id="i'.$name.'" name="'.$name.'" length="'.$length.'">'.$value.'</textarea><br />';
+								<div class="control-group">
+			            <label class="control-label" for="i'.$name.'">'.$desc.': </label>
+			            <div class="controls">
+			              <textarea class="span6 longText" id="i'.$name.'" name="'.$name.'" length="'.$length.'" rows="8">'.$value.'</textarea>
+			            </div>
+			          </div>';
 	}
 	
 	function WysiwygEditor($name,$value,$length,$desc,$imgValue=false){
@@ -123,43 +215,63 @@ class Forms {
 	}
 
 	function FileUpload($name,$desc,$class="iFile"){
-		return '
-		<div class="label" for="i'.$name.'">'.$desc.': </div><input id="i'.$name.'" name="'.$name.'" type="file" class="'.$class.'" /><br />';
+		
+		return '<div class="control-group">
+	            <label class="control-label" for="i'.$name.'">'.$desc.': </label>
+	            <div class="controls">
+	              <input id="i'.$name.'" name="'.$name.'" type="file" class="input-file" />
+	            </div>
+	          </div>';
 	}
 
 	function Linked($name,$desc,$value,$linkId,$modul,$id){
+		/*
 		$output .= '<a href="javascript:linkWindow(\''.$linkId.'\');" class="linkItem">'.$desc.'</a>';
-		$output .= '<iframe id="'.$linkId.'Mask" src="about:blank" scrolling="no" frameborder="0" class="dataLoaderIeMask hidden"></iframe>';
-		$output .= '<div class="dataLoader hidden" id="'.$linkId.'ListContainer"></div>';
-		$output .= '<div class="dataPreview hidden" id="'.$linkId.'PreviewContainer"></div><br />';
+		//$output .= '<iframe id="'.$linkId.'Mask" src="about:blank" scrolling="no" frameborder="0" class="dataLoaderIeMask hidden"></iframe>';
+		//$output .= '<div class="dataLoader hidden" id="'.$linkId.'ListContainer"></div>';
+		$output .= '<div class="dataPreview" id="'.$linkId.'PreviewContainer"></div><br />';
 		$output .= Forms::Hidden($name,$value,"linkId".$linkId);
 		$output .= Templates::writeJS("buildLinkPreview('".$linkId."',".$modul.",".$id.");");
+		*/
+		$icon = 'pencil';
+		//picture
+		
+		$output = '
+		<div class="well">
+	      <h4><i class="icon-'.$icon.'"></i> <a href="javascript:linkWindow(\''.$linkId.'\');" rel="tooltip" title="'.$GLOBALS['msg']['REL_EDIT'].'">'.mb_strtoupper($desc,"utf-8").'</a></h4>
+	      <hr />';
+
+		$output .= '<div class="dataPreview" id="'.$linkId.'PreviewContainer"></div><br />';
+		$output .= Forms::Hidden($name,$value,"linkId".$linkId);
+		$output .= Templates::writeJS("buildLinkPreview('".$linkId."',".$modul.",".$id.");");
+	      
+	  $output .= '</div>';
+		
 		return $output;
 	}
 
 	function Hidden($name,$value,$id=""){
 		if ($id == ""){
 		return '
-		<input type="hidden" name="'.$name.'" value="'.$value.'" />';
+		<input type="hidden" name="'.$name.'" value="'.$value.'" >';
 		} else {
 		return '
-		<input type="hidden" name="'.$name.'" id="'.$id.'" value="'.$value.'" />';
+		<input type="hidden" name="'.$name.'" id="'.$id.'" value="'.$value.'" >';
 		}
 	}
 
 	function Submit($name,$value){
-		return '<input class="formSubmit" id="btnSubmit" type="submit" name="'.$name.'" value="'.$value.'" />';
+		return '<input class="btn btn-primary" id="btnSubmit" type="submit" name="'.$name.'" value="'.$value.'" />';
 	}
 
 	function Button($name,$value,$link){
 		return '
-		<input class="formSubmit" type="button" name="'.$name.'" value="'.$value.'" onClick="location.href=\''.$link.'\';" />';
+		<input class="btn" type="button" name="'.$name.'" value="'.$value.'" onClick="location.href=\''.$link.'\';" />';
 	}
 
 	function Select($name,$value,$length,$desc,$option,$cls="iSelect"){
 		if (is_array($option)){
-			$output = '
-			<div class="label" for="i'.$name.'">'.$desc.': </div><select class="'.$cls.'" id="i'.$name.'" name="'.$name.'">';
+			$output = '<select class="'.$cls.'" id="i'.$name.'" name="'.$name.'">';
 			$output .= '<option value="0">----------------------</option>';
 			if (count($option)){
 				foreach ($option as $o){
@@ -170,21 +282,35 @@ class Forms {
 			} else {
 				//$output .= '<option value="0">----------------------</option>';
 			}
-			$output .= '</select><br />';
+			$output .= '</select>';
 		}
+		$output = '
+			<div class="control-group">
+          <label class="control-label" for="i'.$name.'">'.$desc.': </label>
+          <div class="controls">
+          '.$output.'
+          </div>
+			</div>';
 		return $output;
 	}
 	
 	function Branches($name,$value,$length,$desc,$option,$cls="iSelect"){
 		if (is_array($option)){
 			$output = '
-			<div class="label" for="i'.$name.'">'.$desc.': </div><select class="'.$cls.'" id="i'.$name.'" name="'.$name.'">';
+			<select class="'.$cls.'" id="i'.$name.'" name="'.$name.'">';
 			$output .= '<option value="0">----------------------</option>';
 			if (count($option) > 0)			
 				$output .= Forms::OptionRecursive(0,$option,$value,0);			
 			
-			$output .= '</select><br />';
+			$output .= '</select>';
 		}
+		$output = '
+			<div class="control-group">
+          <label class="control-label" for="i'.$name.'">'.$desc.': </label>
+          <div class="controls">
+          '.$output.'
+          </div>
+			</div>';
 		return $output;
 	}
 	
@@ -222,7 +348,7 @@ class Forms {
 		if (is_array($option)){
 			$results = explode(",",$value);
 			$output = '
-			<div class="label" for="i'.$name.'">'.$desc.': </div><select multiple="multiple" size="10" class="'.$cls.'" id="i'.$name.'" name="'.$name.'[]">';
+			<select multiple="multiple" size="10" class="'.$cls.'" id="i'.$name.'" name="'.$name.'[]">';
 			if (count($option)){
 				foreach ($option as $o){
 					$sel ="";
@@ -237,8 +363,15 @@ class Forms {
 			} else {
 				$output .= '<option value="0">----------------------</option>';
 			}
-			$output .= '</select><br />';
+			$output .= '</select>>';
 		}
+		$output = '
+			<div class="control-group">
+          <label class="control-label" for="i'.$name.'">'.$desc.': </label>
+          <div class="controls">
+          '.$output.'
+          </div>
+			</div>';
 		return $output;
 	}
 	
@@ -247,14 +380,21 @@ class Forms {
 		if (is_array($option)){
 			$results = explode(",",$value);
 			$output = '
-			<div class="label" for="i'.$name.'">'.$desc.': </div><select multiple="multiple" size="10" class="'.$cls.'" id="i'.$name.'" name="'.$name.'[]">';
+			<select multiple="multiple" size="10" class="'.$cls.'" id="i'.$name.'" name="'.$name.'[]">';
 			if (count($option) > 0){			
 				$output .= Forms::OptionRecursive(0,$option,$results,0);
 			} else {
 				$output .= '<option value="0">----------------------</option>';
 			}
-			$output .= '</select><br />';
+			$output .= '</select>';
 		}
+		$output = '
+			<div class="control-group">
+          <label class="control-label" for="i'.$name.'">'.$desc.': </label>
+          <div class="controls">
+          '.$output.'
+          </div>
+			</div>';
 		return $output;
 	}
 
@@ -272,6 +412,7 @@ function SelectMenu($name,$option){
 			}
 			$output .= '</select>';
 		}
+		
 		return $output;
 	}
 

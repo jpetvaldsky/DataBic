@@ -27,12 +27,13 @@ function ajaxLoad(url, target) {
 function ajaxDone(url, target) {
   if (req.readyState == 4) { // only if req is "loaded"
     if ((req.status == 200) || (req.status == 0)) { // only if "OK"
-      document.getElementById(target).innerHTML = req.responseText;
+      $(target+" .innerContent").html(req.responseText);
 	  eval(callBackFunction);
 	  callBackFunction = "";
     } else {
-      document.getElementById(target).innerHTML=" AHAH Error:\n"+ req.status + "\n" +req.statusText;
+      $(target+" .innerContent").html(" AHAH Error:\n"+ req.status + "\n" +req.statusText);
     }
+    $(target).modal('show');    
 	if (window.XMLHttpRequest) {
 		req = new XMLHttpRequest();
 	} else if (window.ActiveXObject) {
@@ -44,6 +45,8 @@ function ajaxDone(url, target) {
 var linkOpened = "";
 var defaultValue = ""
 
+
+/*
 function linkWindow(dataId){
 	linkOpened = dataId;
 	
@@ -77,6 +80,31 @@ function linkWindow(dataId){
 	{
 		document.getElementById("backgroundMask").className = "visible";
 	}
+}*/
+
+function linkWindow(dataId)
+{
+	$('.modal').remove();
+	var modalWindow = '<div class="modal" id="'+dataId+'_ListContainer"></div>';
+
+ $('body').append(modalWindow);
+
+	var linkType = dataId;
+	if (dataId.indexOf('_ID_') != -1)
+	{
+		var linkArr = dataId.split('_ID_');
+		linkType = linkArr[0]+"&subLink="+linkArr[1];
+	} 
+	
+	$.ajax({
+  	url: "linked.php?type="+linkType
+	}).done(function(data) { 
+    $("#"+dataId+"_ListContainer").html(data);
+    updateCheckboxItems(dataId);
+	});	
+   
+  $("#"+dataId+"_ListContainer").modal('show');    
+	
 }
 
 function viewBranch(type,branchId){
@@ -86,12 +114,45 @@ function viewBranch(type,branchId){
 		var linkArr = type.split('_ID_');
 		linkType = linkArr[0]+"&subLink="+linkArr[1];
 	} 
-	if (document.getElementById("linkedBranchData"))
-	{
-		ajaxLoad("linked.php?type="+linkType+"&branchId="+branchId,"linkedBranchData");
-		callBackFunction = "updateCheckboxItems(\""+type+"\")";
-	}
+
+	$.ajax({
+  	url: "linked.php?type="+linkType+"&branchId="+branchId
+	}).done(function(data) { 
+    $("#linkedBranchData").html(data);
+    updateCheckboxItems(type);
+	});	
+		
 }
+
+function buildLinkPreview(dataId,modul,uId){
+	if (modul != undefined)
+	{
+		modulId = modul;
+	}
+	if (uId != undefined)
+	{
+		uniqId = uId;
+	}
+
+	$("#"+dataId+"PreviewContainer").html("loading data…");
+	var link_value = $("#linkId"+dataId).val();
+	var linkType = dataId;
+	if (dataId.indexOf('_ID_') != -1)
+	{
+		var linkArr = dataId.split('_ID_');
+		linkType = linkArr[0]+"&subLink="+linkArr[1];
+	} 					
+
+	$.ajax({
+  	url: "linked.php?type="+linkType+"&do=preview&modul="+modulId+"&uniq_id="+uniqId+"&data="+link_value
+	}).done(function(data) {
+    $("#"+dataId+"PreviewContainer").html(data);
+    $("#"+dataId+"PreviewContainer").show();
+    $('a[rel="tooltip"]').tooltip();
+	});	
+
+}
+
 
 
 function linkedSave(dataId){
@@ -183,9 +244,9 @@ function switchItemCheckBox(type,id,addItem){
 		var obj = document.getElementById("check"+type+"-"+id);
 		if (addItem)
 		{			
-			obj.src = "i/ico/checkbox-a.gif";
+			obj.src = "i/ico/checkbox-a.png";
 		} else {
-			obj.src = "i/ico/checkbox-n.gif";
+			obj.src = "i/ico/checkbox-n.png";
 		}
 	}
 }
@@ -201,52 +262,9 @@ function maskClose(){
 	}
 }
 
-function buildLinkPreview(dataId,modul,uId){
-	if (modul != undefined)
-	{
-		modulId = modul;
-	}
-	if (uId != undefined)
-	{
-		uniqId = uId;
-	}
-	if (document.getElementById("linkId"+dataId))
-	{
-		var link_value = document.getElementById("linkId"+dataId);
-		if (document.getElementById("debuger"))
-		{
-			document.getElementById("debuger").innerHTML = link_value.value;
-		}
-		if (link_value.value != "")
-		{
-			if (document.getElementById(dataId+"PreviewContainer"))
-			{
-				document.getElementById(dataId+"PreviewContainer").className = "dataPreview visible";
-				if (req.readyState == 0)
-				{
-					var linkType = dataId;
-					if (dataId.indexOf('_ID_') != -1)
-					{
-						var linkArr = dataId.split('_ID_');
-						linkType = linkArr[0]+"&subLink="+linkArr[1];
-					} 					
-					ajaxLoad("linked.php?type="+linkType+"&do=preview&modul="+modulId+"&uniq_id="+uniqId+"&data="+link_value.value,dataId+"PreviewContainer");
-				} else {
-					//alert("waiting");
-					var retry = setTimeout("buildLinkPreview(\""+dataId+"\","+modulId+","+uniqId+")", 200);
-				}
-			}
-		} else {
-			if (document.getElementById(dataId+"PreviewContainer"))
-			{
-				document.getElementById(dataId+"PreviewContainer").className = "dataPreview hidden";
-				document.getElementById(dataId+"PreviewContainer").innerHTML = "";
-			}
-		}
-	}
-}
 
 function linkDelete(id,type){
+	$('.tooltip').remove();
 	if (document.getElementById("linkId"+type))
 	{
 		var link_value = document.getElementById("linkId"+type);
@@ -254,19 +272,7 @@ function linkDelete(id,type){
 		{
 			var rem = new RegExp("x"+id+"x");
 			link_value.value = link_value.value.replace(rem,"");
-			if (document.getElementById("p_"+type+"x"+id))
-			{
-				document.getElementById("p_"+type+"x"+id).innerHTML = "";
-				document.getElementById("p_"+type+"x"+id).className = "hidden";
-			}
-			if (link_value.value == "")
-			{
-				if (document.getElementById(type+"PreviewContainer"))
-				{
-					document.getElementById(type+"PreviewContainer").className = "dataPreview hidden";
-					document.getElementById(type+"PreviewContainer").innerHTML = "";
-				}
-			}
+			$("#p_"+type+"x"+id).remove();
 		}
 	}
 }
@@ -302,8 +308,33 @@ function linkOrder(id,type,dir){
 				newOrder += "x"+ids[i]+"x";
 			}
 			link_value.value = newOrder;
-			reorderPreview(type);
+			
+			if (type.indexOf("images") != -1)
+			{
+				$('.tooltip').remove();
+				for (var im=0;im< ids.length ;im++)
+				{										
+					$("#"+type+"PreviewContainer ul").append($("#p_"+type+"x"+ids[im]).detach());
+				}
+				
+			}
+			else
+			{
+				reorderPreview(type);
+			}
 		}
+	}
+}
+
+function reorderImageList(type)
+{
+	alert($("#linkId"+type).val());
+	var imageIDs = $("#linkId"+type).val().split(",");
+	for (var i=0;i< imageIDs.length ;i++)
+	{
+		
+		//$("#p_"+type+"x"+imageIDs[i]).detach();
+		//$("#"+type+"PreviewContainer ul").append();
 	}
 }
 
@@ -346,6 +377,7 @@ function reorderPreview(type){
 					}
 				}
 				newOrderContent += '<div class="clear"></div>';
+				
 				previewBox.innerHTML = newOrderContent;
 			}
 		}
@@ -366,6 +398,7 @@ function editLinkDesc(id,type){
 }
 
 function saveLinkDesc(id,i_type,type,modul,uniq_id){
+	
 	if (document.getElementById("desc_"+type+"x"+id))
 	{
 		var linkDesc = document.getElementById("desc_"+type+"x"+id);

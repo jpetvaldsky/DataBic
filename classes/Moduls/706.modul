@@ -1,0 +1,16 @@
+<?php
+class Modul_706 {
+    function Modul_706(){
+        $this->name = "Podpořený projekt";
+        $this->superadmin = false;
+        $this->service = false;
+        $this->items = array(
+            array("název","title","TextRow",255,false,true),
+            array("místo","location","TextRow",255,false,true),
+            array("rok","year","Year",4,false,true),              
+            array("text","text","Text",5000,false,true),    
+            array("obrázky","linkedimages","Linked",255,true,true,"images",1), 
+            array("soubory","linkedfiles","Linked",255,true,true,"files",2)        
+        );
+    }
+}

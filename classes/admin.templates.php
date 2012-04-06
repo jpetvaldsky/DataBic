@@ -7,24 +7,43 @@ class Templates {
 	*/
 	function ModulItem($ico,$name,$action,$modulName,$onSite=false){
 		if ($GLOBALS["name"] == $modulName){
-			$cls = "Active";
+			$cls = ' class="active"';
 		}
 		$link = '?type=modul&name='.$modulName.'&action='.$action;
+		
 		if ($onSite !==false)
+		{
 			$link = '?type=webmap&nodeId='.$onSite.'&name='.$modulName.'&action='.$action;
-		$output = '<div class="modulItem'.$cls.'"><a href="'.$link.'">'.$name.'</a></div><div class="stripeModul"><img src="i/pix.gif" width="1" height="41" /></div>';
-		// style="background-image: url(\'i/icon/'.$ico.'\');"
+		}
+		$icon = '';
+		if ($ico != '')
+		{
+			$icon = '<i class="icon-'.$ico.'"></i> ';
+		}
+		$output = '
+				<li '.$cls.'><a href="'.$link.'">'.$icon.$name.'</a></li>';
+				
 		return $output;		
 	}
 
 	function ModulMenu($data){
-		$output = '<div class="modulMenu">'.$data.'<div class="clear"></div></div>';//'<h1>'.$GLOBALS["menu"]["MODUL"].'</h1>'.
+		$output = '
+        <div class="well" style="padding: 8px 0;">  	      
+				  <ul class="nav nav-list">
+				  	<li class="nav-header"><i class="icon-folder-open"></i> '.$GLOBALS["menu"]["MODUL"].'</li>
+						'.$data.'			  
+				  </ul>
+			  </div>';
+		return $output;	
+		//$output = '<div class="modulMenu">'.$data.'<div class="clear"></div></div>';//'<h1>'.	.'</h1>'.
 		return $output;
 	}
 
 	function ModulList($data){
-		$output = '<div class="modulList">'.$data.'</div>';
-		return $output;
+		if ($data != '')
+			return $data;
+		else
+			return '';
 	}
 
 	function ModulListHeader($name,$id,$onSite=false){
@@ -37,7 +56,7 @@ class Templates {
 		return $output;
 	}
 
-	function ModulHeadlineList($modul,$headers,$onSite=false){
+	function ModulHeadlineList($modul,$headers,$onSite=false,$centered=''){
 		$d = "ASC";
 		if ($_GET["d"] == "ASC") $d="DESC";
 		foreach ($headers as $value){
@@ -45,25 +64,34 @@ class Templates {
 				$sortLink = 'index.php?type=webmap&nodeId='.$onSite.'&name='.$modul.'&order='.$value[2].'&d='.$d;
 			else
 				$sortLink = 'index.php?type=modul&name='.$modul.'&order='.$value[2].'&d='.$d;
-			if ($value[1] != "") $width= "width=\"".$value[1]."\"";
+			if ($value[1] != "") $width= "style=\"width: ".$value[1]."px !important;\"";
 			else $width="";
+			$cls = "";
+			if ($value[3] != "") $cls = " class=\"centered\"";
 			$output .= "
-		<th ".$width."><a href=\"".$sortLink."\">".$value[0]."</a></th>";
+			<th ".$width.$cls."><a href=\"".$sortLink."\">".$value[0]."</a></th>";
 		}		
 		$output .= "
-		<th colspan=\"2\" width=\"100\" style=\"text-align:center;\">".$GLOBALS["msg"]["TOOLS"]."</th>";
+			<th style=\"width: 100px !important;\" class=\"centered\">".$GLOBALS["msg"]["TOOLS"]."</th>";
 		return "
-	<tr>".$output."
-	</tr>";
+	<thead>
+		<tr>
+			".$output."
+		</tr>
+	</thead>
+	<tbody>";
 	}
 
-	function ModulDataRow($modul,$row,$count,$items,$onSite,$maxOrd=false){
-		$ico_a = "item-active.gif";
+	function ModulDataRow($modul,$row,$count,$items,$onSite,$maxOrd=false,$drowRows=0){
+
+		$ico_a = "icon-ok-sign";
 		$title_a = $GLOBALS["msg"]["DEACTIVE"];
 		if ($row["active"]+0 != 1) {
-			$ico_a = "item-disabled.gif";
+			$ico_a = "icon-remove-circle";
 			$title_a = $GLOBALS["msg"]["ACTIVE"];
 		}
+		
+		
 		if ($onSite !== false){
 			$editLink = 'index.php?type=webmap&nodeId='.$onSite.'&name='.$modul.'&action=edit&id='.$row["uniq_id"];
 			$activateLink = 'index.php?type=webmap&nodeId='.$onSite.'&name='.$modul.'&action=list&do=mactive&id='.$row["uniq_id"];
@@ -77,8 +105,13 @@ class Templates {
 			$orderLinkUp = 'index.php?type=modul&name='.$modul.'&action=list&do=push&id='.$row["row_id"].'&reorder='.($row["order"]-1);
 			$orderLinkDown = 'index.php?type=modul&name='.$modul.'&action=list&do=push&id='.$row["row_id"].'&reorder='.($row["order"]+1);
 		}
+		$output = '';
+		if ($drowRows > 0)
+		{
 		$output = '			
-			<td onclick="location.href=\''.$editLink.'\'"><small>'.$row["order"].'/<em>'.$row["uniq_id"].'</em></td>
+			<td rowspan="'.$drowRows.'" onclick="location.href=\''.$editLink.'\'">'.$row["order"].'</td>';
+		}
+		$output .= '
 			<td onclick="location.href=\''.$editLink.'\'">'.$row["lang"].'</td>
 			';
 		//<td>'.$row["order_id"].'</td>
@@ -134,34 +167,51 @@ class Templates {
 			}
 			if ($rcount == 4) break;
 		}
-		if (($row["order"]-1)> 0) $orderBt = '<a href="'.$orderLinkUp.'"  title="'.$GLOBALS["msg"]["MUP"].'"><img src="i/arr-up.gif" width="13" height="13"  /></a>';
-		else $orderBt = '<img src="i/arr-up-n.gif" width="13" height="13"  />';
-		if ($maxOrd == false) $orderBt .= '<a href="'.$orderLinkDown.'"  title="'.$GLOBALS["msg"]["MDOWN"].'"><img src="i/arr-down.gif" width="13" height="13" /></a>';
-		else $orderBt .= '<img src="i/arr-down-n.gif" width="13" height="13" />';
+		$orderBt = '';
+		if (($row["order"]-1)> 0) 
+		{
+			$orderBt = '<a href="'.$orderLinkUp.'" title="'.$GLOBALS["msg"]["MUP"].'" rel="tooltip"><i class="icon-arrow-up"></i></a>';
+		}
+		else
+		{
+			$orderBt .= '<i class="icon-arrow-up icon-white"></i>';
+		}
+		$orderBt .= ' | ';		
+		if ($maxOrd == false) 
+		{
+			$orderBt .= '<a href="'.$orderLinkDown.'" title="'.$GLOBALS["msg"]["MDOWN"].'" rel="tooltip"><i class="icon-arrow-down"></i></a>';
+		}
+		else
+		{
+			$orderBt .= '<i class="icon-arrow-down icon-white"></i>';
+		}
+		$orderBt .= ' | ';
 		$output .= '
-			<td class="rc"><a href="'.$activateLink.'"  title="'.$title_a.'"><img src="i/ico/'.$ico_a.'" width="10" height="13" /></a></td>
-			<td class="rc">'.$orderBt.'</td>
-			<td class="rc">
-				<a href="'.$editLink.'"  title="'.$GLOBALS["msg"]["EDIT"].'"><img src="i/ico/item-edit.gif" width="12" height="11" /></a>&nbsp;|&nbsp;
-				<a href="'.$deleteLink.'" title="'.$GLOBALS["msg"]["DEL"].'" onclick="return confirm(\''.$GLOBALS["msg"]["DEL_C"].'\');"><img src="i/ico/item-delete.gif" width="12" height="11" /></a>
+			<td class="centered"><a href="'.$activateLink.'"  title="'.$title_a.'" rel="tooltip"><i class="'.$ico_a.'"></i></a></td>
+			<td class="centered">
+				'.$orderBt.'
+				<a href="'.$editLink.'" title="'.$GLOBALS["msg"]["EDIT"].'" rel="tooltip"><i class="icon-edit"></i></a> | <a href="'.$deleteLink.'" title="'.$GLOBALS["msg"]["DEL"].'" rel="tooltip" onclick="return confirm(\''.$GLOBALS["msg"]["DEL_C"].'\');"><i class="icon-remove"></i></a>
 			</td>
 		';
 		$cls = "row".(($count%2)+1);
 		return "
 	<tr class=\"".$cls."\" onmouseover=\"this.className='rowOver';\" onmouseout=\"this.className='".$cls."';\">".$output."
 	</tr>";
+	
+	
 	}
 
 	function ModulLangSpliter($count){
 		$cls = "row".(($count%2)+1);
-		return '
-			<tr class="'.$cls.'"><td colspan="20" class="split"><img src="i/pix.gif" width="1" height="1" alt="splitter" /></td></tr>';
+		/*return '
+			<tr class="'.$cls.'"><td colspan="20" class="split"><img src="i/pix.gif" width="1" height="1" alt="splitter" /></td></tr>';*/
+			return '';
 	}
 
 	function ModulLinkDataRow($modul,$row,$count,$items){
 		$editLink = "javascript:linkItem('".$modul."',".$row["row_id"].");";
 		$output = '
-			<td><a href="'.$editLink.'"><img src="i/ico/checkbox-n.gif" width="16" height="16" id="check'.$modul.'-'.$row["row_id"].'" /></a></td>			
+			<td><a href="'.$editLink.'"><img src="i/ico/checkbox-n.png" width="16" height="16" id="check'.$modul.'-'.$row["row_id"].'" /></a></td>			
 			';
 		$output .= '
 			<td>'.$row["row_id"].'</td>			
@@ -169,7 +219,7 @@ class Templates {
 		$rcount = 0;
 		foreach ($items as $r){
 			$rcount++;
-			if (($r[2] != "Option") && ($r[2] != "Linked")){//&& ($r[2] != "CheckBox")
+			if (($r[2] != "Option") && ($r[2] != "Linked") && ($r[2] != "Splitter")){//&& ($r[2] != "CheckBox")
 				switch($r[2]){
 					case "CheckBox":
 						$value = "ne";
@@ -202,21 +252,48 @@ class Templates {
 	}
 
 	function AdminPreviewModulItem($modul,$id,$name){
-		$output = '
-		<div class="linkedItemRow" id="p_'.$modul.'x'.$id.'">
-			<div style="float:left;width:auto;display:inline;">'.$name.'</div>
-			<div style="float:right;width:100px;display:inline;"><a href="javascript:linkOrder(\''.$id.'\',\''.$modul.'\',-1);" title="'.$GLOBALS["msg"]["FWD"].'"><img src="i/ico/up.gif" width="11" height="11" /></a>&nbsp;|&nbsp;
-			<a href="javascript:linkOrder(\''.$id.'\',\''.$modul.'\',1);" title="'.$GLOBALS["msg"]["BCKWD"].'"><img src="i/ico/down.gif" width="11" height="11" /></a>&nbsp;|&nbsp;
-			<a href="javascript:linkDelete(\''.$id.'\',\''.$modul.'\');" title="'.$GLOBALS["msg"]["UNLINK"].'"><img src="i/ico/link-break.gif" width="15" height="12" /></a></div>
-			<div class="clear"></div>
-		</div>';
+		$output = '';
+		if ($name != '')
+		{
+			$output = '
+				<tr class="linkedItemRow" id="p_'.$modul.'x'.$id.'">
+					<td class="centered">'.$id.'</td>
+					<td>'.$name.'</td>
+					<td class="centered">
+						<a href="javascript:linkOrder(\''.$id.'\',\''.$modul.'\',-1);" title="'.$GLOBALS["msg"]["FWD"].'" rel="tooltip"><i class="icon-arrow-up"></i></a>&nbsp;|&nbsp;
+						<a href="javascript:linkOrder(\''.$id.'\',\''.$modul.'\',1);" title="'.$GLOBALS["msg"]["BCKWD"].'" rel="tooltip"><i class="icon-arrow-down"></i></a>&nbsp;|&nbsp;
+						<a href="javascript:linkDelete(\''.$id.'\',\''.$modul.'\');" title="'.$GLOBALS["msg"]["UNLINK"].'" rel="tooltip"><i class="icon-trash"></i></a>
+					</td>
+				</tr>
+			';			
+		}
 		return $output;
 	}
+	
+	function ModulPreviewTableList($data,$ajax){
+			if ($data != '')
+			{
+			return '
+			<table class="table table-condensed">
+      	<thead>
+      		<tr>
+      			<th class="centered" style="width: 30px !important;">ID</th>
+      			<th>Title</th>
+      			<th class="centered" style="width: 120px !important;">&nbsp;</th>
+      		</tr>
+      	</thead>
+      	<tbody>
+				'.$data.'
+      	</tbody>
+      </table>';
+      }
+		}
 
 	function ModulListTable($data){
 		$output = "
-		<table cellpadding=\"0\" cellspacing=\"0\" class=\"modulTableList\">
+		<table class=\"table table-striped table-condensed table-bordered\">
 			".$data."
+			</tbody>
 		</table>
 		";
 
@@ -243,7 +320,7 @@ class Templates {
 		';
 	}
 
-	function FolderTree($type,$tree,$id,$ajax,$subId=''){
+	function FolderTree($type,$tree,$id,$ajax,$subId='',$firstLevel=false){
 		$output = "";
 		foreach ($tree as $branch){
 			if ($branch[3] == $id){
@@ -252,33 +329,128 @@ class Templates {
 				$fId = 0;
 				if (isSet($_GET["folder_id"])) $fId = $_GET["folder_id"];
 				if (isSet($_POST["folder_id"])) $fId = $_POST["folder_id"];
-				if (($fId== $branch[2]) || ($fId== $branch[2])) $cls=" class=\"activeBranch\"";
+				$icon = "icon-folder-close";
+				if ($fId == $branch[2]) {
+				 $cls=" class=\"active\"";
+				 $icon = "icon-folder-open icon-white";
+				}
 				$branchLink = "?type=".$type."&action=list&folder_id=".$branch[2];
 				if ($ajax) $branchLink = "javascript:viewBranch('".$type.$subId."',".$branch[2].");";
 				else $actionOver = " onmouseover=\"showEditBox('".$nameid."');\"";
 				$output .= "
-				<li class=\"".$branch[0]."\"><a href=\"".$branchLink."\"".$actionOver.$cls.">".$branch[1]."</a>";			
-				if (!$ajax){
-					$output .= "
-					<div onmouseout=\"hideEditBox('".$nameid."');\" id=\"".$nameid."\" class=\"editBox hidden\">
-						<a href=\"?type=".$type."&action=add_sub&folder_id=".$branch[2]."\" title=\"".$GLOBALS["msg"]["FOLD-ADD"]."\" onmouseover=\"showEditBox('".$nameid."');\"><img src=\"i/ico/folder-add.gif\" width=\"18\" height=\"15\" /></a>";
-					if (($branch[2]+0) != 0){
-					$output .= "
-						<a href=\"?type=".$type."&action=edit&folder_id=".$branch[2]."\" title=\"".$GLOBALS["msg"]["FOLD-EDIT"]."\" onmouseover=\"showEditBox('".$nameid."');\"><img src=\"i/ico/folder-edit.gif\" width=\"18\" height=\"15\" /></a>";
-					$output .= "
-						<a href=\"?type=".$type."&action=del&folder_id=".$branch[2]."\" title=\"".$GLOBALS["msg"]["FOLD-DEL"]."\" onclick=\"return confirm('".$GLOBALS["msg"]["DEL_C"]."');\" onmouseover=\"showEditBox('".$nameid."');\"><img src=\"i/ico/folder-delete.gif\" width=\"18\" height=\"15\" /></a>";				
-					}
-					$output .= "
-					</div>";
-				}
-				$output .= Templates::FolderTree($type,$tree,$branch[2],$ajax,$subId);
+				<li ".$cls."><a href=\"".$branchLink."\"".$actionOver."><i class=\"".$icon."\"></i> ".$branch[1]."</a>";			
+				
+				$output .= Templates::FolderTree($type,$tree,$branch[2],$ajax,$subId,false);
 				$output .= "
 				</li>";
 			}
 		}
 		if ($output != "")
-			$output = "<ul>".$output."</ul>";
+		{
+			if ($firstLevel)
+			{
+			$output = '
+			<div class="well" style="padding: 8px 0;">  	      
+						  <ul class="nav nav-list">
+						  	<li class="nav-header">LIBRARY FOLDERS</li>
+						  	'.$output.'
+					  	</ul>
+					  </div>';
+			}
+			else
+			{
+				$output = '
+				<ul class="nav nav-list" style="padding-right: 0px;">
+					'.$output.'
+				</ul>';
+				
+			}
+		}
 		return $output;
+	}
+	
+	function FolderOptions($res,$info,$type,$action)
+	{
+		$output = '
+		<div class="well" style="padding: 8px 0;">						
+							<ul class="nav nav-list">
+						  	<li class="nav-header">FOLDER DETAILS: </li>		  
+						  	<li>
+						  		Title: <strong>'.$info['name'].'</strong>
+						  	</li>
+						  	<!--<li>
+						  		Image count: <strong>28</strong>
+						  	</li>
+						  	<li>
+						  		Last modified: <strong>26.3.2012 17:58</strong>						  		
+						  	</li>-->
+						  	<li class="divider"></li>';
+		if ($action == 'add_sub')
+		{
+			$output .= '<li class="active">
+										<a href="?type='.$type.'&action=add_sub&folder_id='.$info["id"].'"><i class="icon-plus icon-white"></i> '.$GLOBALS["msg"]["FOLD-ADD"].'</a>
+								</li>
+						  	<li class="divider"></li>						  	
+						  	<li>
+									'.$res.'					  	
+						  	</li>';
+  			$output .= '<li class="divider"></li>';
+		}
+		else
+		{
+			$output .= '<li>
+										<a href="?type='.$type.'&action=add_sub&folder_id='.$info["id"].'"><i class="icon-plus"></i> Add subfolder</a>
+								</li>';
+		}
+
+		if ($action == 'edit')
+		{
+			$output .= '<li class="divider"></li>';
+			$output .= '<li class="active">
+										<a href="?type='.$type.'&action=edit&folder_id='.$info["id"].'" ><i class="icon-edit icon-white"></i> '.$GLOBALS["msg"]["FOLD-EDIT"].'</a>
+								</li>
+						  	<li class="divider"></li>						  	
+						  	<li>
+									'.$res.'					  	
+						  	</li>';
+		}
+		else
+		{
+			$output .= '<li>
+										<a href="?type='.$type.'&action=edit&folder_id='.$info["id"].'"><i class="icon-edit"></i> '.$GLOBALS["msg"]["FOLD-EDIT"].'</a>
+								</li>';
+		}		
+		
+		/*						  	
+								<li class="active">
+										<a href="#" rel="tooltip" data-original-title="Edit folder"><i class="icon-edit icon-white"></i> Edit folder</a>														
+						  	</li>
+						  	<li class="divider"></li>						  	
+						  	<li>
+									<form>
+									  <label>Folder name:</label>
+									  <input type="text" class="span3" placeholder="News 2">
+				            <label for="select01">Parent folder:</label>
+			              <select id="select01">
+			                <option>Image library</option>
+			                <option>2</option>
+			                <option>3</option>
+			                <option>4</option>
+			                <option>5</option>
+			              </select>
+
+									  <button type="submit" class="btn btn-primary">Save</button>
+									  <button type="submit" class="btn">Cancel</button>
+									</form>						  	
+						  	</li>	
+								<li>
+										<a href="#" rel="tooltip" data-original-title="Remove this folder"><i class="icon-remove-sign"></i> Remove this folder</a>
+								</li>		*/
+			$output .= '																			  	
+						  </ul>
+						</div>';
+			
+			return $output;
 	}
 
 	function FolderContent($data){
@@ -287,6 +459,34 @@ class Templates {
 			'.$data.'
 		</div>
 		';
+	}
+
+	function BreadcrumbNav($items)
+	{
+		$itemList = '';
+		if (count($items) > 0)
+		{
+			foreach ($items as $i)
+			{
+				if ($i['is_last'])
+				{
+					$itemList .= '<li class="active">'.$i['name'].'</li>';
+				}
+				else
+				{
+					$itemList .= '<li><a href="'.$i['link'].'">'.$i['name'].'</a><span class="divider">/</span></li>';
+				}
+			}
+		return '
+		<ul class="breadcrumb">
+			'.$itemList.'
+		</ul>
+';
+		}
+		else
+		{
+			return '';
+		}
 	}
 
 	/*
@@ -310,49 +510,80 @@ class Templates {
 		
 		
 	function ImageList($data,$ajax){
-		return '<div id="linkedBranchData" class="dataList">'.$data.'&nbsp;<br /><div class="clear">&nbsp;</div></div><div class="clear">&nbsp;</div>';
+		//return '<div id="linkedBranchData" class="dataList">'.$data.'&nbsp;<br /><div class="clear">&nbsp;</div></div><div class="clear">&nbsp;</div>';
+		if ($data != '')
+			return '<ul class="thumbnails">'.$data.'</ul>';
+		else
+			return '<div class="well">'.$GLOBALS['msg']['EMPTY_FOLDER'].'</div>';
 	}
 
 	function ImageBox($img,$title,$id,$folder_id,$subId,$ajax=false){
 		if (file_exists($img)){
 			list($iWidth,$iHeight,$iType) = getimagesize($img);
-			if ($iHeight < 80){
-				$padding = floor((80-$iHeight)/2);
+			if ($iHeight < 100){
+				$padding = floor((100-$iHeight)/2);
 				if ($padding > 0) $cls= ' style="padding-top:'.$padding.'px;padding-bottom:'.$padding.'px;"';
 			}
 		} else {
 			$bImg = $img;
 			$img = "i/broken-image.gif";
-			$iWidth=$iHeight= 80;
+			$iWidth=$iHeight= 100;
 		}
 		$editLink = "index.php?type=images&action=list&folder_id=".$folder_id."&do=edit&id=".$id;
 		$deleteLink = "index.php?type=images&action=list&folder_id=".$folder_id."&do=delete&id=".$id;
 		$checkBox = "";
+		$tooltip = $GLOBALS["msg"]["EDIT"];
+		$options = '';
+		
 		if ($ajax) 
 		{
+			$tooltip = "";
 			$editLink = "javascript:linkItem('images".$subId."',".$id.");";
-			$checkBox = '<a href="'.$editLink.'"><img src="i/ico/checkbox-n.gif" width="16" height="16" id="checkimages'.$subId.'-'.$id.'" /></a>';
+			$options = '<h5><a href="'.$editLink.'"><img src="i/ico/checkbox-n.png" width="16" height="16" id="checkimages'.$subId.'-'.$id.'" /> '.shortenString($title,20,'..').'</a></h5>';
 		} else {
-			$delLink = '&nbsp;<a href="'.$deleteLink.'" title="'.$GLOBALS["msg"]["DEL"].'"><img src="i/ico/delete-bin.gif" width="12" height="14" alt="'.$GLOBALS["msg"]["DEL"].'" /></a>';
+			$options = '<h5>'.shortenString($title,30,'..').'</h5>';
+			$options .= '<a href="#" rel="tooltip" title="unlink"><i class=" icon-trash"></i> '.$GLOBALS["msg"]["DELETE"].'</a>';
+			//'&nbsp;<a href="'.$deleteLink.'" title="'.$GLOBALS["msg"]["DEL"].'"><img src="i/ico/delete-bin.gif" width="12" height="14" alt="'.$GLOBALS["msg"]["DEL"].'" /></a>';
 		}
+		/*
 		return '
 			<div class="imageBox"><div class="imgThumb"'.$cls.'><a href="'.$editLink.'" title="'.$GLOBALS["msg"]["EDIT"].'"><img src="'.$img.'" width="'.$iWidth.'" height="'.$iHeight.'" alt="'.$bImg.'" /></a></div>'.$checkBox.'<a href="'.$editLink.'" title="'.$GLOBALS["msg"]["EDIT"].'">'.shortenString($title,30,'..').'</a>'.$delLink.'</div>';
+			*/
+		return '
+		<li>
+			<div class="thumbnail">
+  			<a href="'.$editLink.'" title="'.$tooltip.'" rel="tooltip" class="imageThumb"><span '.$cls.'><img src="'.$img.'" width="'.$iWidth.'" height="'.$iHeight.'" alt="'.$bImg.'" /></span></a>
+  			<div class="caption">  				
+					'.$options.'
+  			</div>
+  		</div>
+ 		</li>';
 	}
 	
+	// JUST IMAGE PREVIEW NO OPTIONS
 	function ImageDropBox($img,$title,$id){
 		if (file_exists($img)){
 			list($iWidth,$iHeight,$iType) = getimagesize($img);
-			if ($iHeight < 80){
-				$padding = floor((80-$iHeight)/2);
+			if ($iHeight < 100){
+				$padding = floor((100-$iHeight)/2);
 				if ($padding > 0) $cls= ' style="padding-top:'.$padding.'px;padding-bottom:'.$padding.'px;"';
 			}
 		} else {
 			$bImg = $img;
 			$img = "i/broken-image.gif";
-			$iWidth=$iHeight= 80;
+			$iWidth=$iHeight= 100;
 		}
 		return '
-			<div class="imageBox"><div class="imgThumb"'.$cls.'><img src="'.$img.'" id="id_'.$id.'" width="'.$iWidth.'" height="'.$iHeight.'" alt="'.$bImg.'" /></div>'.shortenString($title,50,'..').'</div>';
+			<li>
+				<div class="thumbnail">
+					<div class="imageThumb">
+						<span '.$cls.'><img src="'.$img.'" id="id_'.$id.'" width="'.$iWidth.'" height="'.$iHeight.'" alt="'.$bImg.'" /></span>
+					</div>
+					<div class="caption">
+				  	<h5>'.shortenString($title,50,'..').'</h5>
+				  </div>
+				</div>
+			</li>';
 	}
 
 	function ImageForm($data){
@@ -361,35 +592,38 @@ class Templates {
 		return $output;
 	}
 
+	// PREVIEW FOR DISPLAY IMAGES ATTACHED TO RECORD
 	function AdminPreviewImage($id,$iPath,$subId,$modul,$uniq_id){
 		$row_data = Modules::ModulDataById($modul,$uniq_id);
 		$iData = Images::getImageLinkedDescription($id,$modul,$uniq_id,$row_data["lang"]);
-		$desc = " - - -";
+		$desc = $row_data['title'];
 		if ($iData != -1){
 			$desc = $iData["desc"];
 		}
 		if (file_exists($iPath)){
 			list($iWidth,$iHeight,$iType) = getimagesize($iPath);
-			if ($iHeight < 80){
-				$padding = floor((80-$iHeight)/2);
-				if ($padding > 0) $cls= ' style="padding-top:'.$padding.'px;padding-bottom:'.$padding.'px;"';
+			if ($iHeight < 100){
+				$padding = floor((100-$iHeight)/2);
+				if ($padding > 0) 
+					$cls= ' style="padding-top:'.$padding.'px;padding-bottom:'.$padding.'px;"';
 			}
 		} else {
 			$iPath = "i/broken-image.gif";
-			$iWidth=$iHeight= 80;
+			$iWidth=$iHeight= 100;
 		}
-		$output = '
-		<div class="imageBox" id="p_images'.$subId.'x'.$id.'">
-			<div class="imgThumb"'.$cls.'><img src="'.$iPath.'" width="'.$iWidth.'" height="'.$iHeight.'" /></div>
-			<a href="javascript:linkOrder(\''.$id.'\',\'images'.$subId.'\',-1);" title="'.$GLOBALS["msg"]["FWD"].'"><img src="i/ico/left.gif" width="12" height="11" /></a>&nbsp;|&nbsp;
-			<a href="javascript:linkOrder(\''.$id.'\',\'images'.$subId.'\',1);" title="'.$GLOBALS["msg"]["BCKWD"].'"><img src="i/ico/right.gif" width="12" height="11" /></a>&nbsp;|&nbsp;
-			<a href="javascript:linkDelete(\''.$id.'\',\'images'.$subId.'\');" title="'.$GLOBALS["msg"]["UNLINK"].'"><img src="i/ico/link-break.gif" width="15" height="13" /></a>			
-		</div>';
-		return $output;
-		/*
-		<div id="form_img'.$subId.'x'.$id.'" class="descInput hidden"><input type="text" value="'.(($desc!=" - - -")?$desc:"").'" id="input_img'.$subId.'x'.$id.'" />&nbsp;<a href="javascript:saveLinkDesc(\''.$id.'\',\'images\',\'img'.$subId.'\','.$modul.','.$uniq_id.');" title="'.$GLOBALS["msg"]["SAVE"].'"><img src="i/ico/action_save.gif" width="14" height="14" /></a></div>
-			<div id="desc_img'.$subId.'x'.$id.'" class="descText"><a href="javascript:editLinkDesc(\''.$id.'\',\'img'.$subId.'\');" title="'.$GLOBALS["msg"]["EDIT_DESC"].'"><img src="i/ico/page_edit.gif" width="14" height="14" /></a>&nbsp;<span id="desct_img'.$subId.'x'.$id.'">'.$desc.'</span></div>
-			*/
+
+		return '
+		<li id="p_images'.$subId.'x'.$id.'">
+			<div class="thumbnail">
+  			<div class="imageThumb"><span '.$cls.'><img src="'.$iPath.'" width="'.$iWidth.'" height="'.$iHeight.'" alt="'.$bImg.'" /></span></div>
+  			<div class="caption">
+  				<!--<h5>'.shortenString($desc,30,'..').'</h5>-->
+  				<a href="javascript:linkOrder(\''.$id.'\',\'images'.$subId.'\',-1);" rel="tooltip" title="'.$GLOBALS["msg"]["FWD"].'"><i class="icon-arrow-left"></i></a>&nbsp;|&nbsp;
+  				<a href="javascript:linkOrder(\''.$id.'\',\'images'.$subId.'\',1);" rel="tooltip" title="'.$GLOBALS["msg"]["BCKWD"].'"><i class="icon-arrow-right"></i></a>&nbsp;|&nbsp;
+  				<a href="javascript:linkDelete(\''.$id.'\',\'images'.$subId.'\');" rel="tooltip" title="'.$GLOBALS["msg"]["UNLINK"].'"><i class=" icon-trash"></i></a>
+  			</div>
+  		</div>
+  		</li>';
 	}
 	/*
 		-----------------------------------------------
@@ -407,38 +641,79 @@ class Templates {
 		}
 	
 		function FileList($data,$ajax){
-			return '<div id="linkedBranchData" class="dataList">'.$data.'&nbsp;<br /><div class="clear">&nbsp;</div></div><div class="clear">&nbsp;</div>';
+			//return '<div id="linkedBranchData" class="dataList">'.$data.'&nbsp;<br /><div class="clear">&nbsp;</div></div><div class="clear">&nbsp;</div>';
+			if ($data != '')
+			{
+			return '
+			<table class="table table-condensed">
+      	<thead>
+      		<tr>
+      			<th style="width: 30px !important;">&nbsp;</th>
+      			<th>Filename</th>
+      			<th>Type</th>
+      			<th>Size</th>
+      			<th>Title</th>
+      			<th class="centered">&nbsp;</th>
+      		</tr>
+      	</thead>
+      	<tbody>
+				'.$data.'
+      	</tbody>
+      </table>';
+      }
+      else
+      {
+      	return '<div class="well">'.$GLOBALS['msg']['EMPTY_FOLDER'].'</div>';
+      }
 		}
 
 		function FileBox($file,$original_name,$title,$id,$folder_id,$subId,$ajax=false){
 			if (file_exists($file)){
 				$editLink = "index.php?type=files&action=list&folder_id=".$folder_id."&do=edit&id=".$id;
 				$deleteLink = "index.php?type=files&action=list&folder_id=".$folder_id."&do=delete&id=".$id;
-				$checkBox = "&nbsp;";
+				$ico = "&nbsp;";
+				$filetype = pathinfo($file);
+				$buttons = '&nbsp;';
+				$tooltip = '';
 				if ($ajax) 
 				{
 					$editLink = "javascript:linkItem('files".$subId."',".$id.");";
-					$checkBox = '<a href="'.$editLink.'"><img src="i/ico/checkbox-n.gif" width="16" height="16" id="checkfiles'.$subId.'-'.$id.'" /></a>';
+					$ico = '<a href="'.$editLink.'"><img src="i/ico/checkbox-n.png" width="16" height="16" id="checkfiles'.$subId.'-'.$id.'" /></a>';
+					$original_name = shortenString($original_name,30,'..');
 				} else {
 					$editLinkBt = '&nbsp;<a href="'.$editLink.'" title="'.$GLOBALS["msg"]["EDIT"].'"><img src="i/ico/item-edit.gif" width="12" height="11" alt="'.$GLOBALS["msg"]["EDIT"].'" /></a>';
 					$delLink = '&nbsp;<a href="'.$deleteLink.'" title="'.$GLOBALS["msg"]["DEL"].'"><img src="i/ico/delete-bin.gif" width="12" height="14" alt="'.$GLOBALS["msg"]["DEL"].'" /></a>';
-				}
-				$filetype = pathinfo($file);
-				if (file_exists("i/ico/files/".$filetype["extension"].".gif")){
-					$ico = "i/ico/files/".$filetype["extension"].".gif";
-				} else {
-					$ico = "i/ico/files/blank.gif";
-				}
-				$ico = '<img src="'.$ico.'" width="16" height="16" alt="'.$filetype.'" />';
-				$filetype = ' / '.$filetype["extension"];
-				$filesize = ' / '.Files::formatbytes(filesize ($file));
-				return '
-					<table class="fileBox" cellspacing="0">
-						<tr><td width="30" style="text-align:center;">'.$ico.'</td><td><a href="'.$editLink.'">'.$original_name.'</a>'.$filetype.$filesize.'</td><td width="50">&nbsp;</td></tr><tr><td class="tbb">'.$checkBox.'</td><td class="tbb">'.shortenString($title,30,'..').'</td><td class="tbb">'.$editLinkBt.$delLink.'</td></tr>
-					</table>';
-			}
 
+					if (file_exists("i/ico/files/".$filetype["extension"].".gif")){
+						$ico = "i/ico/files/".$filetype["extension"].".gif";
+					} else {
+						$ico = "i/ico/files/blank.gif";
+					}		
+					$ico = '<img src="'.$ico.'" width="16" height="16" alt="'.$filetype.'" />';			
+					$tooltip = ' title="'.$GLOBALS["msg"]["EDIT"].'" rel="tooltip"';
+					$buttons = '<a href="'.$editLink.'" rel="tooltip" title="'.$GLOBALS["msg"]["EDIT"].'"><i class="icon-edit"></i></a>';
+					$buttons .= '&nbsp;|&nbsp;';
+  				$buttons .= '<a href="'.$deleteLink.'" rel="tooltip" title="'.$GLOBALS["msg"]["DEL"].'"><i class=" icon-trash"></i></a>';
+				}
+				
+				
+				$filetype = $filetype["extension"];
+				$filesize = Files::formatbytes(filesize ($file));
+			return '
+			<tr>
+  			<td class="centered">'.$ico.'</td>
+  			<td><a href="'.$editLink.'"'.$tooltip.'>'.$original_name.'</a></td>
+  			<td>'.$filetype.'</td>
+  			<td>'.$filesize.'</td>
+  			<td>'.shortenString($title,50,'..').'</td>
+  			<td class="centered">'.$buttons.'</td>
+  		</tr>';
+				return '';				
+			}
+			return '';
 		}
+		
+		
 		function FileBoxPreview($file,$original_name,$title,$id,$folder_id,$subId){
 			if (file_exists($file)){
 				$filetype = pathinfo($file);
@@ -448,17 +723,21 @@ class Templates {
 					$ico = "i/ico/files/blank.gif";
 				}
 				$ico = '<img src="'.$ico.'" width="16" height="16" alt="'.$filetype.'" />';
-				$filetype = ' / '.$filetype["extension"];
-				$filesize = ' / '.Files::FormatBytes(filesize ($file));
-				return '
-					<div class="linkedFile" id="p_files'.$subId.'x'.$id.'">
-					<table class="fileBox" cellspacing="0">
-						<tr><td width="30" class="tbb" style="text-align:center;">'.$ico.'</td><td class="tbb">'.$original_name.$filetype.$filesize.'</td><td class="tbb" width="200"><em>'.shortenString($title,50,'..').'</em></td><td width="100" class="tbb"><a href="javascript:linkOrder(\''.$id.'\',\'files'.$subId.'\',-1);" title="'.$GLOBALS["msg"]["FWD"].'"><img src="i/ico/up.gif" width="12" height="11" /></a>&nbsp;|&nbsp;
-			<a href="javascript:linkOrder(\''.$id.'\',\'files'.$subId.'\',1);" title="'.$GLOBALS["msg"]["BCKWD"].'"><img src="i/ico/down.gif" width="12" height="11" /></a>&nbsp;|&nbsp;
-			<a href="javascript:linkDelete(\''.$id.'\',\'files'.$subId.'\');" title="'.$GLOBALS["msg"]["UNLINK"].'"><img src="i/ico/link-break.gif" width="15" height="13" /></a></td></tr>
-					</table>
-				</div>';
+				$filetype = $filetype["extension"];
+				$filesize = Files::FormatBytes(filesize ($file));
+			return '
+			<tr class="linkedFile" id="p_files'.$subId.'x'.$id.'";>
+  			<td class="centered">'.$ico.'</td>
+  			<td>'.$original_name.'</td>
+  			<td>'.$filetype.'</td>
+  			<td>'.$filesize.'</td>
+  			<td>'.shortenString($title,50,'..').'</td>
+  			<td class="centered"><a href="javascript:linkOrder(\''.$id.'\',\'files'.$subId.'\',-1);" rel="tooltip" title="'.$GLOBALS["msg"]["FWD"].'"><i class="icon-arrow-up"></i></a>&nbsp;|&nbsp;
+  				<a href="javascript:linkOrder(\''.$id.'\',\'files'.$subId.'\',1);" rel="tooltip" title="'.$GLOBALS["msg"]["BCKWD"].'"><i class="icon-arrow-down"></i></a>&nbsp;|&nbsp;
+  				<a href="javascript:linkDelete(\''.$id.'\',\'files'.$subId.'\');" rel="tooltip" title="'.$GLOBALS["msg"]["UNLINK"].'"><i class=" icon-trash"></i></a></td>
+  		</tr>';
 			}
+			return  '';
 
 		}
 		/*
@@ -494,7 +773,7 @@ class Templates {
 		if ($ajax) 
 		{
 			$editLink = "javascript:linkItem('videos".$subId."',".$id.");";
-			$checkBox = '<a href="'.$editLink.'"><img src="i/ico/checkbox-n.gif" width="16" height="16" id="checkvideos'.$subId.'-'.$id.'" /></a>';
+			$checkBox = '<a href="'.$editLink.'"><img src="i/ico/checkbox-n.png" width="16" height="16" id="checkvideos'.$subId.'-'.$id.'" /></a>';
 		} else {
 			$delLink = '&nbsp;<a href="'.$deleteLink.'" title="'.$GLOBALS["msg"]["DEL"].'"><img src="i/ico/delete-bin.gif" width="12" height="14" alt="'.$GLOBALS["msg"]["DEL"].'" /></a>';
 		}
@@ -576,7 +855,7 @@ class Templates {
 				if ($ajax) 
 				{
 					$editLink = "javascript:linkItem('urls".$subId."',".$id.");";
-					$checkBox = '<a href="'.$editLink.'"><img src="i/ico/checkbox-n.gif" width="16" height="16" id="checkurls'.$subId.'-'.$id.'" /></a>';
+					$checkBox = '<a href="'.$editLink.'"><img src="i/ico/checkbox-n.png" width="16" height="16" id="checkurls'.$subId.'-'.$id.'" /></a>';
 				} else {
 					$editLinkBt = '&nbsp;<a href="'.$editLink.'" title="'.$GLOBALS["msg"]["EDIT"].'"><img src="i/ico/item-edit.gif" width="12" height="11" alt="'.$GLOBALS["msg"]["EDIT"].'" /></a>';
 					$delLink = '&nbsp;<a href="'.$deleteLink.'" title="'.$GLOBALS["msg"]["DEL"].'"><img src="i/ico/delete-bin.gif" width="12" height="14" alt="'.$GLOBALS["msg"]["DEL"].'" /></a>';
@@ -632,21 +911,41 @@ class Templates {
 		
 		return $output;
 	}
+	
+	function MenuItemNew($ico,$name,$action,$type,$last=false){
+		if ($GLOBALS["type"] == $type)
+			$cls = "active";
+
+		$output = '<li class="'.$cls.'"><a href="?'.$action.'='.$type.'"><i class="'.$ico.'"></i> '.$name.'</a></li>';		
+		return $output;
+	}
+	
+
 
 	function MainMenu($data){
 		//$output = '<div class="menu"><div class="mBox">'.$data.'</div></div>';
 		$output = '
-	<div class="headline">
-		<div class="logo"><h1>Databič<sup>1</sup></h1></div>		
-		'.$data.'
-	</div>
-	<div class="clear"><img src="i/pix.gif" width="1" height="1" /></div>';
+		<div class="container-fluid">
+			<div class="subhead" id="overview">
+				<div class="subnav">
+			    <ul class="nav nav-pills">
+			    	'.$data.'
+			    </ul>
+			  </div>
+			</div>
+		</div>';
 		return $output;
 	}
 
-	function Message($text){
-		if ($text != "&nbsp;")
-			return "<div class=\"msg\"><strong>".$text."</strong></div>";
+	function Message($text,$header='',$cls='alert-info'){
+		if ($text != "&nbsp;"){
+			if ($header != '')
+			{
+				$header = "<strong>".$header."</strong><br />";
+			}
+			return "<div class=\"container-fluid\"><div class=\"alert ".$cls."\">".$header.$text."</div></div>";
+		}
+		return '';
 	}
 
 	function writeJS($data){
@@ -659,6 +958,69 @@ class Templates {
 		return $output;
 	}
 
+	function topHeader($title,$link,$subtitle='')
+	{
+		if ($link != '')
+			$output = '<h2><a href="'.$link.'">'.$title.'</a>';
+		else
+			$output = '<h2>'.$title;
+		if ($subtitle != '')
+		{
+			$output .= '&gt; <small>'.$subtitle.'</small>';
+		}
+		$output .= '</h2>';
+		return $output;
+	}
+
+	function mainContainerTemplate($header,$link,$content='',$sidebar)
+	{
+		if ($sidebar != "")
+		{
+			$output = '
+			<div class="container-fluid">
+				<div class="row-fluid">
+		      <div class="span3">
+		      '.$sidebar.'
+		      &nbsp;
+					</div>
+		      <div class="span9">
+		      	<div class="page-header">  	      		
+		      		<div class="row-fluid">
+				  	      <div class="span6">
+		  	      		'.$header.'
+		  	      	</div>
+				  	      <div class="span6">
+				  	      <a class="btn btn-primary pull-right" href="'.$link.'"><i class="icon-plus icon-white"></i> Add new record</a>		
+		  	      	</div>
+		  	      </div>
+		      	</div><!-- /.page-header -->';
+			$output .= $content;
+			$output .= '
+					</div>
+				</div><!-- /.row-fluid -->
+			</div><!-- /.container-fluid -->';
+		}
+		else
+		{
+			$output = '
+			<div class="container">
+      	<div class="page-header">  	      		
+      		<div class="row-fluid">
+		  	      <div class="span6">
+  	      		'.$header.'
+  	      	</div>
+		  	      <div class="span6">
+		  	      <a class="btn btn-primary pull-right" href="'.$link.'"><i class="icon-plus icon-white"></i> Add new record</a>		
+  	      	</div>
+  	      </div>
+      	</div><!-- /.page-header -->';
+			$output .= $content;
+			$output .= '
+			</div><!-- /.container -->';		
+		}
+		return $output;
+	}
+
 	/*
 		-----------------------------------------------
 		OTHER TEMPLATES
@@ -668,36 +1030,33 @@ class Templates {
 		----------------------------------------------
 		LANGUAGES
 	*/
-	
-	function LangListHeader(){
-		$output = '<div class="mHeadLine"><div class="left"><h2>'.$GLOBALS["menu"]["LANG"].'</h2></div>';
-		$output .= '<div class="itemAdd left">&nbsp;|&nbsp;<a href="?type=languages&do=new" class="add">'.$GLOBALS["msg"]["NEW"].'</a></div>&nbsp;';
-		$output .= '<div class="clear"><img src="i/pix.gif" width="1" height="1" /></div></div>';
-		return $output;
-	}
 
 	function LangDataRow($id,$row,$count){
-		$ico_a = "item-active.gif";
-		$title_a = $GLOBALS["msg"]["ACTIVE"];
+
+		$ico_a = "icon-ok-sign";
+		$title_a = $GLOBALS["msg"]["DEACTIVE"];
 		if ($row["active"]+0 != 1) {
-			$ico_a = "item-disabled.gif";
-			$title_a = $GLOBALS["msg"]["DEACTIVE"];
+			$ico_a = "icon-remove-circle";
+			$title_a = $GLOBALS["msg"]["ACTIVE"];
 		}
+
+
 		$editLink = 'index.php?type=languages&do=edit&id='.$row["id"];
 		//<td>'.$row["id"].'</td>			
 		$output = '			
-			<td onclick="location.href=\''.$editLink.'\'">'.$row["lang_id"].'</td>			
+			<td onclick="location.href=\''.$editLink.'\'" class="centered">'.$row["lang_id"].'</td>			
 			<td onclick="location.href=\''.$editLink.'\'">'.$row["lang_name"].'</td>			
 			';
 		$output .= '
-			<td class="rc"><a href="index.php?type=languages&do=active&id='.$row["id"].'"  title="'.$title_a.'"><img src="i/ico/'.$ico_a.'" width="10" height="13" /></a></td>
-			<td class="rc">
-				<a href="'.$editLink.'"  title="'.$GLOBALS["msg"]["EDIT"].'"><img src="i/ico/item-edit.gif" width="12" height="11" /></a>&nbsp;|&nbsp;<a href="index.php?type=languages&do=delete&id='.$row["id"].'&lang_id='.$row["lang_id"].'" title="'.$GLOBALS["msg"]["DEL"].'" onclick="return confirm(\''.$GLOBALS["msg"]["DEL_C"].'\');"><img src="i/ico/item-delete.gif" width="12" height="11" /></a>
+			<td class="centered"><a href="index.php?type=languages&do=active&id='.$row["id"].'"  title="'.$title_a.'" rel="tooltip"><i class="'.$ico_a.'"></i></a></td>
+			<td class="centered">
+				<a href="'.$editLink.'"  title="'.$GLOBALS["msg"]["EDIT"].'" rel="tooltip"><i class="icon-edit"></i></a>&nbsp;|&nbsp;<a href="index.php?type=languages&do=delete&id='.$row["id"].'&lang_id='.$row["lang_id"].'" title="'.$GLOBALS["msg"]["DEL"].'" onclick="return confirm(\''.$GLOBALS["msg"]["DEL_C"].'\');" rel="tooltip"><i class="icon-remove"></i></a>
 			</td>
 		';
 		$cls = "row".(($count%2)+1);
 		return "
-	<tr class=\"".$cls."\" onmouseover=\"this.className='rowOver';\" onmouseout=\"this.className='".$cls."';\">".$output."
+	<tr>
+		".$output."
 	</tr>";
 	}
 
@@ -705,24 +1064,31 @@ class Templates {
 		----------------------------------------------
 		TEXTS
 	*/
-	function TextListHeader(){
-		$output = '<div class="mHeadLine"><div class="left"><h2>'.$GLOBALS["menu"]["TXT"].'</h2></div>';
-		$output .= '<div class="itemAdd left">&nbsp;|&nbsp;<a href="?type=text&do=new" class="add">'.$GLOBALS["msg"]["NEW"].'</a></div>&nbsp;';
-		$output .= '<div class="clear"><img src="i/pix.gif" width="1" height="1" /></div></div>';
-		return $output;
-	}
 
-	function TextDataRow($id,$row,$count){
+	function TextDataRow($id,$row,$count,$dropRows=0){
 		$editLink = 'index.php?type=text&do=edit&id='.$row["id"].'&lang_id='.$row["lang_id"];
 		//<td>'.$row["id"].'</td>			
+		if ($dropRows != 0)
+		{
 		$output = '			
-			<td onclick="location.href=\''.$editLink.'\'">'.$row["id"].'</td>			
-			<td onclick="location.href=\''.$editLink.'\'">'.shortenString($row["value"],100).'</td>
-			<td onclick="location.href=\''.$editLink.'\'">'.$row["lang_id"].'</td>			
+			<td class="centered" rowspan="'.$dropRows.'" onclick="location.href=\''.$editLink.'\'">'.$row["id"].'</td>';
+		}
+		if ($row["value"] != '')
+		{
+		$output .= '		
+			<td onclick="location.href=\''.$editLink.'\'">'.shortenString($row["value"],100).'</td>';
+		}
+		else
+		{
+			$output .= '		
+			<td onclick="location.href=\''.$editLink.'\'" class="emptyValue">'.$GLOBALS["msg"]["EMPTY_EDIT"].'</td>';
+		}
+		$output .= '
+			<td class="centered" onclick="location.href=\''.$editLink.'\'">'.$row["lang_id"].'</td>			
 			';
 		$output .= '
-			<td class="rc">
-				<a href="'.$editLink.'"  title="'.$GLOBALS["msg"]["EDIT"].'"><img src="i/ico/item-edit.gif" width="12" height="11" /></a>&nbsp;|&nbsp;<a href="index.php?type=text&do=delete&id='.$row["id"].'&lang_id='.$row["lang_id"].'" title="'.$GLOBALS["msg"]["DEL"].'" onclick="return confirm(\''.$GLOBALS["msg"]["DEL_C"].'\');"><img src="i/ico/item-delete.gif" width="12" height="11" /></a>
+			<td class="centered">
+				<a href="'.$editLink.'"  title="'.$GLOBALS["msg"]["EDIT"].'" rel="tooltip"><i class="icon-edit"></i></a>&nbsp;|&nbsp;<a href="index.php?type=text&do=delete&id='.$row["id"].'&lang_id='.$row["lang_id"].'" title="'.$GLOBALS["msg"]["DEL"].'" onclick="return confirm(\''.$GLOBALS["msg"]["DEL_C"].'\');" rel="tooltip"><i class="icon-remove"></i></a>
 			</td>
 		';
 		$cls = "row".(($count%2)+1);
@@ -736,12 +1102,6 @@ class Templates {
 		SITEMAP
 	*/
 
-	function SitemapHeader(){
-		$output = '<div class="mHeadLine"><div class="left"><h2>'.$GLOBALS["menu"]["MAP"].'</h2></div>';
-		$output .= '<div class="itemAdd left">&nbsp;|&nbsp;<a href="?type=webmap&do=new" class="add">'.$GLOBALS["msg"]["NEW"].'</a></div>&nbsp;<div class="clear"></div>';
-		$output .= '</div><div class="hr"><img src="i/pix.gif" width="1" height="1" /></div>';
-		return $output;
-	}
 
 	function treeNode($parentId,$id,$name){
 		$parentId = $parentId-1; 
@@ -753,18 +1113,25 @@ class Templates {
 
 	function webMap($nodes,$modulForm,$editForm,$nodeId,$fClass='hidden'){
 		$output = '
-			<div class="modulMenu">
-				<div class="modulItem"><a href="javascript: sitemap.openAll();">otevřít mapu</a></div><div class="stripeModul"><img src="i/pix.gif" width="1" height="41" /></div>
-				<div class="modulItem"><a href="javascript: sitemap.closeAll();">zavřít mapu</a></div><div class="stripeModul"><img src="i/pix.gif" width="1" height="41" /></div>
+			<div class="well" style="padding: 8px 0; ">
+				<ul class="nav nav-list">
+			  	<li class="nav-header">'.$GLOBALS['msg']['SITEMAP_OPTIONS'].'</li>
+							<li><a href="#" onclick="sitemap.openAll();" title="'.$GLOBALS['msg']['SITEMAP_OPEN'].'"><i class="icon-zoom-in"></i> '.$GLOBALS['msg']['SITEMAP_OPEN'].'</a></li>
+							<li><a href="#" onclick="sitemap.closeAll();" title="'.$GLOBALS['msg']['SITEMAP_CLOSE'].'"><i class="icon-zoom-out"></i> '.$GLOBALS['msg']['SITEMAP_CLOSE'].'</a></li>
+		  				<li><a href="?type=webmap&amp;do=new" title="'.$GLOBALS['msg']['PAGE_ADD'].'"><i class="icon-plus-sign"></i> '.$GLOBALS['msg']['PAGE_ADD'].'</a></li>
+					  </ul>
+
 			';
+		/*
 		if ($nodeId != -1) {
 		$output .= '<div class="modulItem"><a href="javascript: addModul();">Přidat modul:</a></div><div class="stripeModul"><img src="i/pix.gif" width="1" height="41" /></div>
 						<div id="modulForm" class="hidden"><div class="modulItem formTop">'.$modulForm.'</div><div class="stripeModul"><img src="i/pix.gif" width="1" height="41" /></div>';
 		}
+		*/
 		$output .= '
-			</div>
-			<div class="clear"></div></div>
-			<div class="sitemap">
+			<hr />
+			'.Templates::sitemapNodeHeader($GLOBALS['menu']['MAP']).'
+			<div class="sitemap" style=" padding: 0px 15px;">
 			<script type="text/javascript">
 				<!--
 				sitemap = new dTree(\'sitemap\');
@@ -777,10 +1144,28 @@ class Templates {
 				document.write(sitemap);
 				//-->
 			</script>
-			<div class="editForm '.$fClass.'">'.$editForm.'</div>
-			</div>
+			</div><!-- /.sitemap -->
+			';
+			if ($editForm != '')
+			{
+				$output .='
+				<hr />
+				'.$editForm.'
+						';
+			}
+		$output .= '
+			</div><!-- /.well -->
 		';
 		return $output;
+	}
+	
+	function sitemapNodeHeader($title)
+	{
+		return '			
+			<ul class="nav nav-list">
+			  	<li class="nav-header">'.$title.'</li>
+		  </ul>			
+		';
 	}
 
 	function nodeContent($data){
@@ -796,10 +1181,27 @@ class Templates {
 	}
 
 	function Splitter($h,$class,$color){
+		/*
 		if ($class != "fill"){
 			return '<div class="splitter '.$class.'">'.$h.'</div>';
 		} else {
 			return '<div class="splitter '.$class.'" style="background-color:'.$color.';">'.$h.'</div>';
+		}*/
+		return '<h4>'.$h.'</h4><hr />';
+	}
+	
+	function TwoColumnsFluid($c1,$c2,$s1,$s2,$pullRight=false)
+	{
+		if ($pullRight)
+		{
+			$c2 = "<div class=\"pull-right\">".$c2."</div>";
 		}
+		return
+		'<br>
+		<div class="row-fluid">
+      <div class="span'.$s1.'">'.$c1.'</div>
+      <div class="span'.$s2.'">'.$c2.'</div>
+    </div>
+		';
 	}
 }

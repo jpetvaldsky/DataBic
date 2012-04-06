@@ -93,23 +93,37 @@ if (!$linked){
 				$name = $_GET["name"];
 				if (isSet($_POST["name"])) $name= $_POST["name"];
 				$res = $moduls->doAction();
-				$output = Templates::Message($res);
 				$output .= $navigation;
+				/*
+				if ($res != '')
+					$output .= Templates::Message($res);				
+					*/
 				if (strLen($name) > 0)
 					$moduls->autoOrder($name);
-				$output .= $moduls->listModul($name);
-				echo Templates::DataContainer($output);				
-				echo "</div>";
-				echo Forms::ContentDisable();
+				
+				
+				$modulNavigation = $moduls->listModulNavigation($name);
+				$modulContent = $moduls->listModul($name,$header,$headerLink);
+				$output .= Templates::mainContainerTemplate($header,$headerLink,$modulContent,$modulNavigation);
+				
+				echo $output;
 				break;
 			case "webmap":	
 				$moduls = new Modules($usr->superadmin);
 				$moduls->search = $s;
 				$sitemap = new Sitemap();
 				$res = $sitemap->doAction();
-				$output = Templates::Message($res);
 				$output .= $navigation;
-				$output .= $sitemap->init();
+				
+				$output .= Templates::Message($res);				
+				$modulNavigation = '';
+				$modulContent = $sitemap->init($modulNavigation);
+				
+				$headerLink = "?type=webmap";
+				$header = Templates::topHeader($GLOBALS["menu"]["MAP"],$headerLink);				
+				$headerLink .= "&amp;do=new";	
+				
+				$output .= Templates::mainContainerTemplate($header,$headerLink,$modulContent,$modulNavigation);
 				echo $output;
 				break;
 			case "images":
@@ -123,19 +137,29 @@ if (!$linked){
 				$fId = 0;
 				if (isSet($_GET["folder_id"]))$fId = $_GET["folder_id"];
 				if (isSet($_POST["folder_id"])) $fId = $_POST["folder_id"];
-				$FolderData = Templates::FolderListHeader($type,$fId).$folderStructure;
+				
+				//$FolderData = Templates::FolderListHeader($type,$fId).$folderStructure;
+				$FolderData = Templates::BreadcrumbNav($folders->treeItems($type,$fId));
+				$headerLink = "?type=".$type;
 				if ($type=="images"){
+					$header = Templates::topHeader($GLOBALS["menu"]["IMAGES"],'');				
 					$FolderData .= Images::ListByFolder($fId);			
 				} elseif ($type=="videos"){ 
+					$header = Templates::topHeader($GLOBALS["menu"]["VIDEOS"],'');
 					$FolderData .= Videos::ListByFolder($fId);
 				} elseif ($type=="files"){ 
+					$header = Templates::topHeader($GLOBALS["menu"]["FILES"],'');
 					$FolderData .= Files::ListByFolder($fId);
 				} elseif ($type=="urls"){ 
+					$header = Templates::topHeader($GLOBALS["menu"]["URLS"],'');
 					$FolderData .= Urls::ListByFolder($fId);		
 				}
-				$output .= Templates::FolderContent($FolderData);
+				
+				$headerLink .= "&amp;action=list&amp;folder_id=".$fId."&amp;do=new";								
+				//$output .= Templates::FolderContent($FolderData);
+				$output .= Templates::mainContainerTemplate($header,$headerLink,$FolderData,$folderStructure);
+
 				echo $output;
-				echo "</div>";
 				break;
 			case "languages":
 				$moduls = new Modules(true);
@@ -143,23 +167,33 @@ if (!$linked){
 				require_once ("classes/admin.languages.php");
 				$lang = new Languages();
 				$res = $lang->doAction();
-				$output = Templates::Message($res);
 				$output .= $navigation;
-				$output .= $lang->init();
+				$output .= Templates::Message($res);				
+
+				$headerLink = "?type=languages";
+				$header = Templates::topHeader($GLOBALS["menu"]["LANG"],$headerLink);				
+				$headerLink .= "&amp;do=new";				
+				$output .= Templates::mainContainerTemplate($header,$headerLink,$lang->init(),'');
+				
 				echo $output;
 				break;
 			case "text":				
 				$txt = new Text();
 				$res = $txt->doAction();
-				$output = Templates::Message($res);
 				$output .= $navigation;
-				$output .= $txt->init();
+				$output .= Templates::Message($res);
+				
+				$headerLink = "?type=text";				
+				$header = Templates::topHeader($GLOBALS["menu"]["TXT"],$headerLink);								
+				$headerLink .= "&amp;do=new";
+				$output .= Templates::mainContainerTemplate($header,$headerLink,$txt->init(),'');
+				
 				echo $output;
 				break;
 			case "search_fill":
 				$res = $s->updateSearchContent();
-				$output = Templates::Message($res);
 				$output .= $navigation;
+				$output .= Templates::Message($res);	
 				echo $output;
 				break;
 			default:

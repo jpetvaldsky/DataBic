@@ -2,22 +2,22 @@
 
 class Sitemap extends Admin {
 
-	function init(){
+	function init(&$sitemapTree){
 		$this->nodeId = -1;
 		if (isSet($_GET["nodeId"])) $this->nodeId = $_GET["nodeId"]+0;
 		if (isSet($_POST["node_id"])) $this->nodeId = $_POST["node_id"]+0;
-		$output = Templates::SitemapHeader();
-		$output .= $this->treeMenu();
+		$output = '';//Templates::SitemapHeader();
+		$sitemapTree = $this->treeMenu();
+
 		if ($this->nodeId != -1)
 			$output .= $this->nodeContent();
-		$output .= Templates::addClearer();
 		return $output;
 	}
 
 	function nodeContent(){
 		if ($_GET["do"] != "delete"){
 			$node = $this->getById($this->nodeId);
-			$nodeArray = split(",",$node["moduls"]);
+			$nodeArray = explode(",",$node["moduls"]);
 			$output = "";
 				foreach($nodeArray as $modulNum){
 					$modulName = "Modul_".$modulNum;
@@ -219,6 +219,7 @@ class Sitemap extends Admin {
 		} else {
 			$output = "error";
 		}
+
 		return $output;
 	}
 
@@ -234,26 +235,36 @@ class Sitemap extends Admin {
 			}
 		}
 		$post = "insert";
-		if ($_GET["do"]=="edit"){
-			$post = "update";
-			$n = "SELECT * FROM `wa_sitemap` WHERE `id`='".$_GET["nodeId"]."'";
-			if ($nres = mysql_query($n)){
-				$nodeItem = mysql_fetch_array($nres);
-				$pId = $nodeItem["parent_id"];
-				$nodeName = $nodeItem["def_name"];
-			} else {
-				echo mysql_error();
+		$output = '';
+		if ($_GET["do"]=="edit" || $_GET["do"]=="new")
+		{
+			$form = '';
+			if ($_GET["do"]=="edit"){
+				$post = "update";
+				$output = Templates::sitemapNodeHeader($GLOBALS['msg']['PAGE_EDIT']);
+				$n = "SELECT * FROM `wa_sitemap` WHERE `id`='".$_GET["nodeId"]."'";
+				if ($nres = mysql_query($n)){
+					$nodeItem = mysql_fetch_array($nres);
+					$pId = $nodeItem["parent_id"];
+					$nodeName = $nodeItem["def_name"];
+				} else {
+					echo mysql_error();
+				}
 			}
-		}
-		$opt = $this->nodeSelect($pId,0,$option,0);
-		$form = '<select class="nodeSelect" name="parent_id">'.$opt.'</select>';
-		$form .= Forms::TextRow("def_name",$nodeName,128,"Název","iNodeName",false);
-		$form .= Forms::Hidden("nodeId",$nodeItem["id"]);
-		$form .= Forms::Hidden("post_action",$post);
-		$form .= Forms::Hidden("type","webmap");
-		$form .= Forms::Submit("submit",$GLOBALS["msg"]["SAVE"]);
-
-		$output = Forms::Form($form);
+			else
+			{
+				$output = Templates::sitemapNodeHeader($GLOBALS['msg']['PAGE_ADD']);
+			}
+			$opt = $this->nodeSelect($pId,0,$option,0);		
+			$form .= '<label>'.$GLOBALS["msg"]["PAGE_PARENT"].':</label><select class="nodeSelect" name="parent_id">'.$opt.'</select>';
+			$form .= Forms::TextRow("def_name",$nodeName,128,$GLOBALS["msg"]["PAGE_TITLE"],"iNodeName",false);
+			$form .= Forms::Hidden("nodeId",$nodeItem["id"]);
+			$form .= Forms::Hidden("post_action",$post);
+			$form .= Forms::Hidden("type","webmap");
+			$form .= Forms::Submit("submit",$GLOBALS["msg"]["SAVE"]);
+	
+			$output .= '<div style=" padding: 0px 15px;">'.Forms::FormSimple($form).'</div>';
+		}		
 		return $output;
 	}
 
@@ -262,7 +273,7 @@ class Sitemap extends Admin {
 			if ($id == $nodeItem[1]){
 				$sel = "";
 				$addStr = "";
-				$addStr = str_pad($addStr,$count*6*2,"&nbsp;&nbsp;", STR_PAD_LEFT);  
+				$addStr = str_pad($addStr,$count*7*1,"&mdash;", STR_PAD_LEFT);  
 				if ($parentId == $nodeItem[0]) $sel = 'selected="selected"';
 				$o .= '<option value="'.$nodeItem[0].'" '.$sel.'>'.$addStr.$nodeItem[2].'</option>';
 				$o .= $this->nodeSelect($parentId,$nodeItem[0],$option,$count+1);

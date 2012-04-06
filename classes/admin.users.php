@@ -28,19 +28,20 @@ class Users extends Admin {
 			if (mysql_num_rows($result) > 0){
 				$this->logged = true;								
 				$this->superadmin = false;								
-				$GLOBALS["resultMessage"] = "Přihlášení proběhlo úspěšně!<br />";
+				$GLOBALS["resultMessage"] = $GLOBALS["msg"]["LOGIN_SUCCESS"]."<br />";
 				while ($row=mysql_fetch_array($result)){
 					setcookie ("WA_USER_".$this->appName,$row["id"]."|".$row["password"],time()+60*60*24*90);
 					$this->user = $row["id"];
+					$this->uname = $row["username"];
 					if ($row["sa"] == 1){
 						$this->superadmin = true;
 					}
 				}
 			} else {
-				$GLOBALS["errorMessage"]= "Chyba při přihlášení!";
+				$GLOBALS["errorMessage"]= $GLOBALS["msg"]["LOGIN_ERR"]; //"Chyba při přihlášení!";
 			}
 		} else {
-			$GLOBALS["errorMessage"]= "Chyba při přihlášení!";
+			$GLOBALS["errorMessage"]= $GLOBALS["msg"]["LOGIN_ERR"]; //"Chyba při přihlášení!";
 		}
 		if (!$res){
 			$GLOBALS["resultMessage"]= "";

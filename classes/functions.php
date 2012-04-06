@@ -321,4 +321,36 @@
 			$output .= "&#" . ord($input[$i]) . ";";
 		}
 		return $output;
-    }
+	}
+	
+	function verifyAvaiableDirPath($dirPath,$mode=0755)
+	{
+		$dirParams = explode('/',$dirPath);
+		$baseDir = '';
+		for ($a = 0;$a < count($dirParams); $a++)
+		{
+			if ($dirParams[$a] != '')
+			{
+				$baseDir .= $dirParams[$a];			
+				if (!is_dir($baseDir))
+				{
+					if (mkdir($baseDir))
+					{
+						chmod($baseDir,$mode);
+					}
+					else
+					{
+						break;
+					}
+				}
+				else
+				{
+					@chmod($baseDir,$mode);
+				}
+				if (!is_dir($baseDir)) {
+					break;
+				}
+				$baseDir .= '/';
+			}
+		}
+	}

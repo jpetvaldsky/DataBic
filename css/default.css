@@ -1,0 +1,14 @@
+.centered { text-align: center !important; }
+
+.emptyValue { color: #cfcfcf !important; font-style: italic !important; }
+.imageThumb { display: block; width: 100px; height: 100px; text-align: center; background-color: #cccccc; border: 1px solid #969696; }
+
+.imageThumb span { display: block; }
+
+.hidden { display: none !important; }
+.nodeOption { display: inline-block; margin-left: 5px; border: 1px dotted #333333; background-color: white; padding: 1px; }
+
+.editBox2 { display: inline-block !important; }
+
+.modal { width: 960px !important; margin-left: -480px !important; }
+.modal .modal-body { min-height: 430px; }

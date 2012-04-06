@@ -3,7 +3,7 @@
 class Text extends Admin {
 
 	function init(){
-		$output = Templates::TextListHeader();
+		$output = '';
 		$action = $_GET["do"];
 		if (isSet($_POST["do"])) $action = $_POST["do"];
 		switch($action){
@@ -53,8 +53,10 @@ class Text extends Admin {
 		$check = true;
 		if ($id == -1){
 			$action="insert";
+			$legend = $GLOBALS["msg"]["NEW"];			
 		} else {			
 			$data =  $this->recordById($id);
+			$legend = $GLOBALS["msg"]["EDIT"].': '.$data["id"];			
 		}
 		if ($data == null){
 			$langData = array();
@@ -70,12 +72,17 @@ class Text extends Admin {
 		if ($data["active"] == "0") $check=false;
 		$output .= Forms::getForm("Number","id",$data["id"],2,"ID");
 		$output .= Forms::getForm("ShortText","value",$data["value"],2,"Text");
+
 		$output .= Forms::Hidden("post_action",$action);
 		$output .= Forms::Hidden("lang_id",$lang);
 		$output .= Forms::Hidden("type","text");
-		$output .= Forms::Submit("submit",$GLOBALS["msg"]["SAVE"]);
-		$output .= Forms::Button("close",$GLOBALS["msg"]["CLOSE"],"?type=text");
-		return Forms::Form($output);
+
+		$buttons = Forms::Submit("submit",$GLOBALS["msg"]["SAVE"]);
+		$buttons .= Forms::Button("close",$GLOBALS["msg"]["CLOSE"],"?type=text");
+		$output .= Forms::FormActions($buttons);
+
+
+		return Forms::Form($output,$legend);
 	}
 
 	function recordById($id){
@@ -150,6 +157,7 @@ class Text extends Admin {
 			if (mysql_num_rows($result) > 0){
 				$output .= $this->listHeadline();
 				$count = 0;
+				$prevID = '';
 				while ($row=mysql_fetch_array($result)){
 					$data = $row;
 					foreach  ($langData as $langId){
@@ -173,30 +181,37 @@ class Text extends Admin {
 								$langRow = false;
 							}
 							if ($langRow){
-								$output .= Templates::ModulLangSpliter($count);
+								//$output .= Templates::ModulLangSpliter($count);
 							}
 						}
 						if ($langRow){
-							$output .= Templates::TextDataRow($id,$data,$count);			
+							$dropRows = 0;
+							if ($prevID != $row["id"])
+							{
+								$dropRows = count($langData);
+								$prevID = $row["id"];
+							} 
+							$output .= Templates::TextDataRow($id,$data,$count,$dropRows);			
 						}
 					}
 					$count++;
 				}
+				$output = Templates::ModulListTable($output);
 			} else {
-				$output .= $GLOBALS["msg"]["EMPTY"];
+				$output = Templates::Message($GLOBALS["msg"]["EMPTY"]);
 			}
 		} else {
-			$output .= $GLOBALS["msg"]["ERR"].mysql_error();
+			$output = Templates::Message(mysql_error(),$GLOBALS["msg"]["ERR"],"alert-error");
 		}
-		return Templates::ModulListTable($output);
+		return $output;
 	}
 
 	function listHeadline(){
 		//array("ID",20,"uniq_id"),
 		$headItems = array(			
-			array("ID",60,"id"),
+			array("ID",60,"id","center"),
 			array("Text","","value"),
-			array("Jazyk","","lang_id")
+			array("Jazyk","","lang_id","center")
 		);
 		$output = Templates::ModulHeadlineList($id,$headItems);
 		return $output;

@@ -1,0 +1,11 @@
+<?php
+class Modul_704 {
+    function Modul_704(){
+        $this->name = "Granty - kategorie";
+        $this->superadmin = false;
+        $this->service = false;
+        $this->items = array(
+            array("název","title","TextRow",255,false,true)
+        );
+    }
+}

@@ -98,22 +98,26 @@ class Files {
 
 
 	function NewFile($folder_id){
-		$output .= "<h3>".$GLOBALS["msg"]["NEW"]."</h3>";
+
 		$output .= Forms::FileUpload("file_item",$GLOBALS["msg"]["CHOOSE"]);
 		$output .= Forms::TextRow("title","",255,$GLOBALS["msg"]["TITLE"],"iText",false);
 		$output .= Forms::Hidden("folder_id",$folder_id);
 		$output .= Forms::Hidden("action","list");
 		$output .= Forms::Hidden("do","insert_file");
 		$output .= Forms::Hidden("type","files");
-		$output .= Forms::Submit("submit",$GLOBALS["msg"]["SAVE"]);
-		return Forms::Form($output)."<hr />";
+		
+		$buttons .= Forms::Submit("submit",$GLOBALS["msg"]["SAVE"]);
+		
+		$output .= Forms::FormActions($buttons);
+		
+		return Forms::Form($output,$GLOBALS["msg"]["NEW"])."<hr />";		
+		
 	}
 
 	function EditFile($folder_id){
 		$row = Files::FileById($_GET["id"]);
 		if ($row != NULL){
-			$output .= "<h3>".$GLOBALS["msg"]["EDIT"]."</h3>";
-//			$output .= Images::AdminThumb($row)."<hr class=\"clear\" />";
+
 			$output .= Forms::FileUpload("file_item",$GLOBALS["msg"]["CHOOSE"]);
 			$output .= Forms::TextRow("title",$row["title"],255,$GLOBALS["msg"]["TITLE"],"iText",false);
 			$folders = new Folders();
@@ -124,8 +128,10 @@ class Files {
 			$output .= Forms::Hidden("action","list");
 			$output .= Forms::Hidden("do","update_file");
 			$output .= Forms::Hidden("type","files");
-			$output .= Forms::Submit("submit",$GLOBALS["msg"]["SAVE"]);
-			return Forms::Form($output)."<hr />";
+			$buttons .= Forms::Submit("submit",$GLOBALS["msg"]["SAVE"]);
+			$output .= Forms::FormActions($buttons);
+			
+			return Forms::Form($output,$GLOBALS["msg"]["EDIT"])."<hr />";
 		}
 	}
 
@@ -186,6 +192,7 @@ class Files {
 
 	function FtpUpload(){
 		$dir = $GLOBALS["files_folder"]."Upload/";
+		verifyAvaiableDirPath($dir);
 		$d = dir($dir);
 		while($entry=$d->read()) {			
 			if (($entry != ".") &&  ($entry != "..")){

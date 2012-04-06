@@ -1,0 +1,13 @@
+<?php
+class Modul_601 {
+    function Modul_601(){
+        $this->name = "testovaci modul";
+        $this->superadmin = false;
+        $this->service = true;
+        $this->items = array(
+            array("název","title","TextRow",255,false,true),
+            array("souvisejici texty","related_text","Linked",255,true,true,"701"),
+            array("souvisejici stranky","related_pages","Linked",255,true,true,"001")
+        );
+    }
+}

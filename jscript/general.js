@@ -32,19 +32,18 @@ function showDiv(id){
 }
 
 function unhideTreeMenu(id){
-	div = document.getElementById(id);
-	div.className= "vis-inline";
+	$("#"+id).removeClass('hidden');
+	$("#"+id).show();
 }
 
 
 function unhideDiv(id){
-	div = document.getElementById(id);
-	div.className= "visible";
+	$("#"+id).removeClass('hidden');
+	$("#"+id).show();
 }
 
 function hideDiv(id){
-	div = document.getElementById(id);
-	div.className= "hidden";
+	$("#"+id).hide();
 }
 
 function mailParse(email)
