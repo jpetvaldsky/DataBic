@@ -58,6 +58,7 @@
 		"FOLD-DEL" => "Delete folder and all data",
 		"FOLD-NAME" => "Folder name",
 		"FOLD-P" => "Parent folder",
+		"FOLDER_DETAILS" => "Detail složky",
 		"TITLE" => "File description",
 		"PAGE_PARENT" => "Parent page",
 		"PAGE_TITLE" => "Page title",

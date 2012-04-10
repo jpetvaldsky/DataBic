@@ -1,0 +1,15 @@
+<?php
+class Modul_110 {
+	function Modul_110(){
+		$this->name = "Volná místa";
+		$this->superadmin = false;
+		$this->service = false;
+		$this->items = array(
+			array("Název","title","TextRow",255,false,true),
+			array("Platné do","valid_to","DateInp",255,false,true),
+			array("Krátký popis","short_desc","Text",5000,false,true),
+			array("","line-dot","Splitter","#FF0000"),			
+			array("Související soubory","files","Linked",255,true,true,"files",1)
+		);
+	}
+}

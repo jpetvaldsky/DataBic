@@ -165,7 +165,7 @@ class Forms {
 								<div class="control-group">
 			            <label class="control-label" for="i'.$name.'">'.$desc.': </label>
 			            <div class="controls">
-			              <textarea class="span6 twoLines" id="i'.$name.'" name="'.$name.'" length="'.$length.'" rows="2">'.$value.'</textarea>
+			              <textarea class="twoLines input-xlarge" id="i'.$name.'" name="'.$name.'" length="'.$length.'" rows="2">'.$value.'</textarea>
 			            </div>
 			          </div>';
 	}
@@ -175,7 +175,7 @@ class Forms {
 								<div class="control-group">
 			            <label class="control-label" for="i'.$name.'">'.$desc.': </label>
 			            <div class="controls">
-			              <textarea class="span6 shortText" id="i'.$name.'" name="'.$name.'" length="'.$length.'" rows="4">'.$value.'</textarea>
+			              <textarea class="shortText input-xlarge" id="i'.$name.'" name="'.$name.'" length="'.$length.'" rows="4">'.$value.'</textarea>
 			            </div>
 			          </div>';		
 	}
@@ -185,7 +185,7 @@ class Forms {
 								<div class="control-group">
 			            <label class="control-label" for="i'.$name.'">'.$desc.': </label>
 			            <div class="controls">
-			              <textarea class="span6 longText" id="i'.$name.'" name="'.$name.'" length="'.$length.'" rows="8">'.$value.'</textarea>
+			              <textarea class="longText input-xlarge" id="i'.$name.'" name="'.$name.'" length="'.$length.'" rows="8">'.$value.'</textarea>
 			            </div>
 			          </div>';
 	}
@@ -261,12 +261,11 @@ class Forms {
 	}
 
 	function Submit($name,$value){
-		return '<input class="btn btn-primary" id="btnSubmit" type="submit" name="'.$name.'" value="'.$value.'" />';
+		return '<input class="btn btn-primary" id="btnSubmit" type="submit" name="'.$name.'" value="'.$value.'" />&nbsp;&nbsp;';
 	}
 
 	function Button($name,$value,$link){
-		return '
-		<input class="btn" type="button" name="'.$name.'" value="'.$value.'" onClick="location.href=\''.$link.'\';" />';
+		return '<a href="'.$link.'" class="btn">'.$value.'</a>&nbsp;&nbsp;';
 	}
 
 	function Select($name,$value,$length,$desc,$option,$cls="iSelect"){

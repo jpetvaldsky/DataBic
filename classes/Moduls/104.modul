@@ -1,0 +1,15 @@
+<?php
+class Modul_104 {
+	function Modul_104(){
+		$this->name = "Historie";
+		$this->superadmin = false;
+		$this->service = false;
+		$this->items = array(
+			array("Rok","milestone_year","Year",4,false,true),		
+			array("Titulek","title","TextRow",255,false,true),
+			array("Text","text_content","Text",5000,false,true),
+			array("","line-dot","Splitter","#FF0000"),			
+			array("Související obrázky","gallery","Linked",255,true,true,"images",1)
+		);
+	}
+}

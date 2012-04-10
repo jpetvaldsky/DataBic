@@ -1,0 +1,17 @@
+<?php
+class Modul_109 {
+	function Modul_109(){
+		$this->name = "Akce / Údálosti";
+		$this->superadmin = false;
+		$this->service = false;
+		$this->items = array(
+			array("Název","title","TextRow",255,false,true),
+			array("Datum od","date_from","DateInp",255,false,true),
+			array("Datum do","date_to","DateInp",255,false,true),
+			array("Lokace","location","TextRow",255,false,true),			
+			array("Krátký popis","short_desc","Text",5000,false,true),
+			array("","line-dot","Splitter","#FF0000"),			
+			array("Související soubory","files","Linked",255,true,true,"files",1)
+		);
+	}
+}

@@ -1,0 +1,24 @@
+<?php
+class Modul_105 {
+	function Modul_105(){
+		$this->name = "Flotila";
+		$this->superadmin = false;
+		$this->service = false;
+		$this->items = array(
+			array("Název","title","TextRow",255,false,true),
+			array("Popis","text_content","ShortText",5000,false,true),
+			array("Parametry","line-dot","Splitter","#FF0000"),
+			array("Max. počet pasažerů","max_passengers","TextRow",255,false,true),
+			array("Max. dolet","max_distance","TextRow",255,false,true),
+			array("Max. rychlost","max_speed","TextRow",255,false,true),
+			array("Výška kabiny","cabin_height","TextRow",255,false,true),
+			array("Šířka kabiny","cabin_width","TextRow",255,false,true),
+			array("Délka kabiny","cabin_length","TextRow",255,false,true),
+			array("Motor","engine","TextRow",255,false,true),
+			array("","line-dot","Splitter","#FF0000"),	
+			array("Ikona","fleet_icon","Linked",255,true,true,"images",1),								
+			array("Fotogalerie","photogallery","Linked",255,true,true,"images",2),
+			array("360 VR Galerie","vr_gallery","Linked",255,true,true,"files",1)			
+		);
+	}
+}

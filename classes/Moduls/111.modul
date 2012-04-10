@@ -1,0 +1,17 @@
+<?php
+class Modul_111 {
+	function Modul_111(){
+		$this->name = "Tiskové zprávy";
+		$this->superadmin = false;
+		$this->service = false;
+		$this->items = array(
+			array("Titulek","title","TextRow",255,false,true),
+			array("Datum","news_date","DateInp",255,false,true),
+			array("Místo","location","TextRow",255,false,true),
+			array("Perex","perex","TwoLines",5000,false,true),
+			array("","line-dot","Splitter","#FF0000"),			
+			array("Galerie obrázků","gallery","Linked",255,true,true,"images",1),
+			array("Související soubory","files","Linked",255,true,true,"files",1)
+		);
+	}
+}

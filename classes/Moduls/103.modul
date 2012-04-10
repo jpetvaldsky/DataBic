@@ -1,0 +1,12 @@
+<?php
+class Modul_103 {
+	function Modul_103(){
+		$this->name = "Úvodní strana";
+		$this->superadmin = false;
+		$this->service = false;
+		$this->items = array(
+			array("Galerie","gallery","Linked",255,true,true,"images",1),
+			array("Rychlé odkazy","related_pages","Linked",255,false,true,"001")
+		);
+	}
+}

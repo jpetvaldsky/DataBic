@@ -14,3 +14,29 @@
 .modal .modal-body { min-height: 430px; }
 
 .novyStyl { display: none; }
+
+.nodeSel { font-weight: bold; }
+
+/*
+.sitemap .nav { padding-top: 4px; margin-bottom: 8px; }
+
+.sitemap .nav-pills > li > a { background-color: white; }
+
+.sitemap .nav-pills > .active > a,
+.sitemap .nav-pills > .active > a:hover {
+  color: #ffffff;
+  background-color: #0088cc !important;
+}
+
+.sitemap .nav > li > a:hover {
+  text-decoration: none;
+  background-color: #eeeeee;
+}
+
+.sitemap .nav-tabs .open .dropdown-toggle,
+.sitemap .nav-pills .open .dropdown-toggle,
+.sitemap .nav > .open.active > a:hover {
+color: white;
+background-color: #999;
+border-color: #999;
+}*/

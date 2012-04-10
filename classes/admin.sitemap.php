@@ -3,32 +3,42 @@
 class Sitemap extends Admin {
 
 	function init(&$sitemapTree){
-		$this->nodeId = -1;
+		$this->nodeId = 1;
 		if (isSet($_GET["nodeId"])) $this->nodeId = $_GET["nodeId"]+0;
 		if (isSet($_POST["node_id"])) $this->nodeId = $_POST["node_id"]+0;
 		$output = '';//Templates::SitemapHeader();
 		$sitemapTree = $this->treeMenu();
 
 		if ($this->nodeId != -1)
-			$output .= $this->nodeContent();
+			$output .= $this->nodeContent($sitemapTree);
 		return $output;
 	}
 
-	function nodeContent(){
+	function nodeContent(&$sitemapTree){
 		if ($_GET["do"] != "delete"){
 			$node = $this->getById($this->nodeId);
 			$nodeArray = explode(",",$node["moduls"]);
+
+			$name = $_GET["name"];
+			if (isSet($_POST["name"])) $name= $_POST["name"];
+			$GLOBALS["name"] = $name;
+			
 			$output = "";
 				foreach($nodeArray as $modulNum){
 					$modulName = "Modul_".$modulNum;
 					$modul = new $modulName;
 					$ico = "Modul/".$modulNum.".gif";
-					if (!file_exists("i/icon/".$ico)) $ico = "system-modul-default.gif";
+					if (!file_exists("i/icon/".$ico)) $ico = ""; //system-modul-default.gif
 					$output .= Templates::ModulItem($ico,$modul->name,"list",$modulNum,$this->nodeId);
 				}
-			$output = Templates::ModulMenu($output);
-			$name = $_GET["name"];
-			if (isSet($_POST["name"])) $name= $_POST["name"];
+				
+			$modulForm = Templates::AddModul($GLOBALS["moduls"]->getModulForm($this->nodeId));
+			$output = Templates::ModulSiteMapMenu($node["def_name"],$output.$modulForm);
+			
+			$sitemapTree = $output.$sitemapTree;
+
+			$output = $this->breadCrumbs($this->nodeId);
+			
 			if ($name != NULL){
 				$action = $_GET["action"];
 				if (isSet($_POST["action"])) $action = $_POST["action"];
@@ -50,6 +60,29 @@ class Sitemap extends Admin {
 			}
 		}
 		return Templates::nodeContent($output);
+	}
+	
+	function breadCrumbs($id)
+	{
+		$items = array();
+		$node = $this->getById($id);
+		$item = array(
+			'name' => $node["def_name"],
+			'link' => "?type=webmap&amp;nodeId=".$id,
+			'is_last' => true
+		);
+		array_unshift($items,$item);
+		while ($node["parent_id"] != 0)
+		{
+			$node = $this->getById($node["parent_id"]);
+			$item = array(
+				'name' => $node["def_name"],
+				'link' => "?type=webmap&amp;nodeId=".$node['id'],
+				'is_last' => false
+			);
+			array_unshift($items,$item);			
+		}		
+		return  Templates::BreadcrumbNav($items);
 	}
 
 	function doAction(){
@@ -111,7 +144,7 @@ class Sitemap extends Admin {
 	function addModul(){
 		if ($_POST["modulId"] != "0"){
 			$node = $this->getById($_POST["node_id"]);
-			$nodeArray = split(",",$node["moduls"]);
+			$nodeArray = explode(",",$node["moduls"]);
 			$add = true;
 			foreach ($nodeArray as $mId){
 				if ($_POST["modulId"] == $mId){
@@ -212,8 +245,10 @@ class Sitemap extends Admin {
 						break;
 				}
 				$editForm = $this->sitemapEdit($_GET["do"]);
+				/*
 				if ($this->nodeId != -1)
 					$modulForm = $GLOBALS["moduls"]->getModulForm($this->nodeId);
+				*/
 				$output = Templates::webMap($nodes,$modulForm,$editForm,$this->nodeId,$cls);
 			}			
 		} else {

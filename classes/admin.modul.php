@@ -534,6 +534,9 @@ class Modules extends Admin {
 			$legend = $GLOBALS["msg"]["EDIT"].': '.$id;				
 		}
 		
+		
+		$columns = array();
+		$output = '';
 		if (is_array($modul->items)){
 			foreach ($modul->items as $row){	
 				$thisCheck = false;
@@ -577,11 +580,22 @@ class Modules extends Admin {
 					case "Splitter":
 						$output .= Templates::Splitter($row[0],$row[1],$row[3]);
 						break;
+					/*case "Column":
+						array_push($columns,$output);
+						$output = '';*/
 					default:
 						$output .= Forms::getForm($row[2],$row[1],$data[$row[1]],$row[3],$row[0]);
 						break;
 				}
 			}
+			/*
+			if (count($columns) > 0)
+			{
+				array_push($columns,$output);
+				$output = Templates::DrawFormColumns($columns);
+			}
+			*/
+			
 			if ($data["active"] == "0") $check=false;
 			$output .= Forms::getForm("CheckBox","active","1",0,$GLOBALS["msg"]["ACTIVE"],$check);
 			$output .= Forms::Hidden("uniq_id",$id);

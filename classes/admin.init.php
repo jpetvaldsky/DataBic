@@ -119,10 +119,12 @@ if (!$linked){
 				$modulNavigation = '';
 				$modulContent = $sitemap->init($modulNavigation);
 				
+/*
 				$headerLink = "?type=webmap";
 				$header = Templates::topHeader($GLOBALS["menu"]["MAP"],$headerLink);				
 				$headerLink .= "&amp;do=new";	
-				
+*/
+				$header = '';				
 				$output .= Templates::mainContainerTemplate($header,$headerLink,$modulContent,$modulNavigation);
 				echo $output;
 				break;

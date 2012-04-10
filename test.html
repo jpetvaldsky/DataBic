@@ -1,0 +1,183 @@
+<!DOCTYPE HTML>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    
+    <meta name="author" content="puppeteers lab">
+    <meta name="copyright" content="2011 puppeteers lab (jiri petvaldsky) - www.puppeteers-lab.com">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+		<title>DataBic CMS - v3</title>
+
+    <link href="./bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="./bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="./bootstrap/css/docs.css" rel="stylesheet">
+    <link href="./css/default.css" rel="stylesheet">    
+  </head>
+  <body data-spy="scroll" data-target=".subnav" data-offset="50">
+  
+	
+	<script type="text/javascript" src="jscript/general.js"></script>
+	<script type="text/javascript" src="jscript/admin.data.js"></script>
+	<script type="text/javascript" src="jscript/dtree.js"></script>
+	<script type="text/javascript" src="jscript/swfobject.js"></script>
+  <!--<script type="text/javascript" src="jscript/thickbox.js"></script>-->
+
+  <script src="./jscript/jquery-1.7.2.min.js"></script>
+  <script src="./bootstrap/jscript/bootstrap.min.js"></script>    
+
+  <script src="./jscript/init.js"></script>  
+  <!--
+  <link rel="stylesheet" type="text/css" href="css/simpleEditor.css" />
+  <link rel="stylesheet" type="text/css" href="css/thickbox.css" />
+	-->
+</head>
+<body>
+
+
+<div class="navbar navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container-fluid">
+     	<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+      <a class="brand" href="#">Databič<sup>v3</sup></a>
+      
+            <div class="nav-collapse">
+        <ul class="nav pull-right">
+        	<li><a href="#"><i class="icon-user icon-white"></i> sona.stejskalova</a></li>
+        	<li class="divider-vertical"></li>
+        	<li><a href="?type=logout">Odhlásit se</a></li>
+        </ul>
+      </div><!--/.nav-collapse -->      
+			    </div>
+  </div>
+</div>
+
+
+
+
+		<div class="container-fluid">
+			<div class="subhead" id="overview">
+				<div class="subnav">
+			    <ul class="nav nav-pills">
+			    	<li class=""><a href="?type=webmap"><i class="icon-home"></i> Mapa stránek</a></li><li class="active"><a href="?type=modul"><i class="icon-folder-open"></i> Obsahové moduly</a></li><li class=""><a href="?type=images"><i class="icon-picture"></i> Obrázky</a></li><li class=""><a href="?type=files"><i class="icon-file"></i> Soubory</a></li><li class=""><a href="?type=text"><i class="icon-comment"></i> Texty</a></li><li class=""><a href="?type=languages"><i class="icon-flag"></i> Jazyky webu</a></li>
+			    </ul>
+			  </div>
+			</div>
+		</div>
+			<div class="container-fluid">
+				<div class="row-fluid">
+		      <div class="span3">
+		      
+        <div class="well" style="padding: 8px 0;">  	      
+				  <ul class="nav nav-list">
+				  	<li class="nav-header"><i class="icon-folder-open"></i> Obsahové moduly</li>
+						
+				<li  class="active"><a href="?type=modul&name=001&action=list"><i class="icon-system-modul-default.gif"></i> Definice stránky</a></li>			  
+				  </ul>
+			  </div>
+		      &nbsp;
+					</div>
+		      <div class="span9">
+		      	<div class="page-header">  	      		
+		      		<div class="row-fluid">
+				  	      <div class="span6">
+		  	      		<h2><a href="?type=modul&name=001">Definice stránky</a></h2>
+		  	      	</div>
+				  	      <div class="span6">
+				  	      <a class="btn btn-primary pull-right" href="?type=modul&name=001&amp;action=new"><i class="icon-plus icon-white"></i> Přidat nový záznam</a>		
+		  	      	</div>
+		  	      </div>
+		      	</div><!-- /.page-header -->
+			<form enctype="multipart/form-data" action="index.php" method="post" class="form-horizontal">
+				<fieldset>
+					<legend>Přidat nový záznam</legend>		
+				<br>
+		<div class="container-fluid">
+			<div class="row-fluid">
+			<div class="span6">
+					<div class="control-group">
+						<label class="control-label" for="ititle">Nadpis stránky: </label>
+            <div class="controls">
+              <input type="text" class="input-xlarge" id="ititle" name="title" value="" length="255" >			              
+            </div>
+          </div>
+					<div class="control-group">
+						<label class="control-label" for="ishort-title">Zkrácený nadpis: </label>
+            <div class="controls">
+              <input type="text" class="input-xlarge" id="ishort-title" name="short-title" value="" length="255" >			              
+            </div>
+          </div><h4>Nastavení</h4><hr />
+					<div class="control-group">
+						<label class="control-label" for="itemplate">Šablona: </label>
+            <div class="controls">
+              <input type="text" class="input-xlarge" id="itemplate" name="template" value="" length="255" >			              
+            </div>
+          </div></div>
+			<!-- /.span6 -->
+			
+			<div class="span6">
+			          <div class="control-group">
+			            <label class="control-label" for="ishow_footer">Zobrazit v patičce: </label>
+			            <div class="controls">
+			              <label class="checkbox">
+			                <input type="checkbox" id="ishow_footer" name="show_footer" value="1">
+			              </label>
+			            </div>
+			          </div>
+			          <div class="control-group">
+			            <label class="control-label" for="iis_mobile">Použít i pro mobilní verzi: </label>
+			            <div class="controls">
+			              <label class="checkbox">
+			                <input type="checkbox" id="iis_mobile" name="is_mobile" value="1">
+			              </label>
+			            </div>
+			          </div><h4>SEO Definice</h4><hr />
+								<div class="control-group">
+			            <label class="control-label" for="imeta_keywords">Klíčová slova: </label>
+			            <div class="controls">
+			              <textarea class="twoLines input-xlarge" id="imeta_keywords" name="meta_keywords" length="2000" rows="2"></textarea>
+			            </div>
+			          </div>
+								<div class="control-group">
+			            <label class="control-label" for="imeta_description">Meta description: </label>
+			            <div class="controls">
+			              <textarea class="shortText input-xlarge" id="imeta_description" name="meta_description" length="200" rows="4"></textarea>
+			            </div>
+			          </div></div>
+			<!-- /.span6 -->
+			</div>
+		</div>
+		
+			          <div class="control-group">
+			            <label class="control-label" for="iactive">Aktivovat: </label>
+			            <div class="controls">
+			              <label class="checkbox">
+			                <input type="checkbox" id="iactive" name="active" value="1" checked>
+			              </label>
+			            </div>
+			          </div>
+		<input type="hidden" name="uniq_id" value="-1" >
+		<input type="hidden" name="row_id" value="1" >
+		<input type="hidden" name="action" value="list" >
+		<input type="hidden" name="node_id" value="0" >
+		<input type="hidden" name="post_action" value="insert" >
+		<input type="hidden" name="type" value="modul" >
+		<input type="hidden" name="name" value="001" >
+			<div class="form-actions">		
+				<input class="btn btn-primary" id="btnSubmit" type="submit" name="submit" value="Uložit" />
+		<input class="btn" type="button" name="close" value="Zavřít" onClick="location.href='?type=modul&name=001&action=list';" />
+			</div>
+		
+				</fieldset>
+			</form>
+					</div>
+				</div><!-- /.row-fluid -->
+			</div><!-- /.container-fluid -->
+<div class="clear"></div>
+<div id="debuger"></div>
+</body>
+</html>

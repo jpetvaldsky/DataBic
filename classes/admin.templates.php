@@ -34,10 +34,37 @@ class Templates {
 						'.$data.'			  
 				  </ul>
 			  </div>';
-		return $output;	
 		//$output = '<div class="modulMenu">'.$data.'<div class="clear"></div></div>';//'<h1>'.	.'</h1>'.
 		return $output;
 	}
+	
+	function ModulSiteMapMenu($pageName,$data){
+/*		$output = '
+        <div class="well sitemap" style="padding-top: 8px; padding-bottom: 0px;">  	      
+        <h6><i class="icon-folder-open"></i> '.$GLOBALS["menu"]["MODUL"].'</h6>
+				  <ul class="nav nav-pills">				  	
+						'.$data.'			   						
+				  </ul>
+			  </div>';*/
+		$output = '
+        <div class="well" style="padding: 8px 0;">  	      
+				  <ul class="nav nav-list">
+				  	<li class="nav-header"><strong>'.$pageName.'</strong>: <small>'.$GLOBALS["menu"]["MODUL"].'</small></li>
+						'.$data.'			  
+				  </ul>
+			  </div>';
+			  
+		return $output;	
+	}
+	
+	function AddModul($data)
+	{
+		return '
+		<li class="divider"></li>
+		<li class="nav-header">'.$GLOBALS["msg"]["ADD-MODUL"].'</li>	
+		<li>'.$data.'</li>';
+	}
+	
 
 	function ModulList($data){
 		if ($data != '')
@@ -50,9 +77,23 @@ class Templates {
 		$link = '?type=modul&name='.$id.'&action=new';
 		if ($onSite !== false)
 			$link = '?type=webmap&nodeId='.$onSite.'&name='.$id.'&action=new';
+		
+		/*
 		$output = '<div class="mHeadLine"><div class="left"><h2>'.$name.'</h2></div>';
 		$output .= '<div class="itemAdd left">&nbsp;|&nbsp;<a href="'.$link.'" class="add">'.$GLOBALS["msg"]["NEW"].'</a></div>&nbsp;';
 		$output .= '<div class="clear"><img src="i/pix.gif" width="1" height="1" /></div></div>';
+		*/
+		$output = '
+				<div class="page-header">  	      		
+      		<div class="row-fluid">
+		  	      <div class="span6">
+  	      		<h2>'.$name.'</h2>
+  	      	</div>
+		  	      <div class="span6">
+		  	      <a class="btn btn-primary pull-right" href="'.$link.'"><i class="icon-plus icon-white"></i> '.$GLOBALS['msg']['NEW'].'</a>		
+  	      	</div>
+  	      </div>
+      	</div><!-- /.page-header -->';
 		return $output;
 	}
 
@@ -199,6 +240,23 @@ class Templates {
 	</tr>";
 	
 	
+	}
+	
+	function DrawFormColumns($columnData)
+	{
+		$spanValue = round(12/count($columnData));
+		$output = '';
+		foreach ($columnData as $c)
+		{
+			$output .= '
+			<div class="span'.$spanValue.'">'.$c.'</div>
+			<!-- /.span'.$spanValue.' -->
+			';
+		}
+		if ($output != '') $output = '		
+			<div class="row">'.$output.'</div>
+		';
+		return $output;
 	}
 
 	function ModulLangSpliter($count){
@@ -352,7 +410,7 @@ class Templates {
 			$output = '
 			<div class="well" style="padding: 8px 0;">  	      
 						  <ul class="nav nav-list">
-						  	<li class="nav-header">LIBRARY FOLDERS</li>
+						  	<li class="nav-header">'.$GLOBALS['msg']['LIB_FOLDERS'].'</li>
 						  	'.$output.'
 					  	</ul>
 					  </div>';
@@ -374,7 +432,7 @@ class Templates {
 		$output = '
 		<div class="well" style="padding: 8px 0;">						
 							<ul class="nav nav-list">
-						  	<li class="nav-header">FOLDER DETAILS: </li>		  
+						  	<li class="nav-header">'.$GLOBALS['msg']['FOLDER_DETAILS'].': </li>		  
 						  	<li>
 						  		Title: <strong>'.$info['name'].'</strong>
 						  	</li>
@@ -399,7 +457,7 @@ class Templates {
 		else
 		{
 			$output .= '<li>
-										<a href="?type='.$type.'&action=add_sub&folder_id='.$info["id"].'"><i class="icon-plus"></i> Add subfolder</a>
+										<a href="?type='.$type.'&action=add_sub&folder_id='.$info["id"].'"><i class="icon-plus"></i> '.$GLOBALS["msg"]["FOLD-SUBADD"].'</a>
 								</li>';
 		}
 
@@ -983,17 +1041,21 @@ class Templates {
 		      '.$sidebar.'
 		      &nbsp;
 					</div>
-		      <div class="span9">
+		      <div class="span9">';
+			if ($header != '')
+			{
+				$output .= '					      
 		      	<div class="page-header">  	      		
 		      		<div class="row-fluid">
 				  	      <div class="span6">
 		  	      		'.$header.'
 		  	      	</div>
 				  	      <div class="span6">
-				  	      <a class="btn btn-primary pull-right" href="'.$link.'"><i class="icon-plus icon-white"></i> Add new record</a>		
+				  	      <a class="btn btn-primary pull-right" href="'.$link.'"><i class="icon-plus icon-white"></i> '.$GLOBALS['msg']['NEW'].'</a>		
 		  	      	</div>
 		  	      </div>
 		      	</div><!-- /.page-header -->';
+			}
 			$output .= $content;
 			$output .= '
 					</div>
@@ -1010,7 +1072,7 @@ class Templates {
   	      		'.$header.'
   	      	</div>
 		  	      <div class="span6">
-		  	      <a class="btn btn-primary pull-right" href="'.$link.'"><i class="icon-plus icon-white"></i> Add new record</a>		
+		  	      <a class="btn btn-primary pull-right" href="'.$link.'"><i class="icon-plus icon-white"></i> '.$GLOBALS['msg']['NEW'].'</a>		
   	      	</div>
   	      </div>
       	</div><!-- /.page-header -->';

@@ -1,0 +1,15 @@
+<?php
+class Modul_112 {
+	function Modul_112(){
+		$this->name = "Výroční zprávy";
+		$this->superadmin = false;
+		$this->service = false;
+		$this->items = array(
+			array("Rok","annual_report_year","Year",4,false,true),		
+			array("Krátký popis","text_content","ShortText",5000,false,true),
+			array("","line-dot","Splitter","#FF0000"),			
+			array("Náhled","thumbnail","Linked",255,true,true,"images",1),
+			array("Výroční zpráva ke stažení","annual_report_dl","Linked",255,true,true,"files",1)			
+		);
+	}
+}

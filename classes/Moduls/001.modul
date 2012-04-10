@@ -1,0 +1,19 @@
+<?php
+class Modul_001 {
+	function Modul_001(){
+		$this->name = "Definice stránky";
+		$this->superadmin = false;
+		$this->service = false;
+		$this->items = array(
+			array("Nadpis stránky","title","TextRow",255,false,true),
+			array("Zkrácený nadpis","short-title","TextRow",255,false,true),
+			array("Nastavení","line-dot","Splitter","#FF0000"),
+			array("Šablona","template","TextRow",255,false,true),
+			array("Zobrazit v patičce","show_footer","CheckBox",255,false,true),
+			array("Použít i pro mobilní verzi","is_mobile","CheckBox",255,false,true),
+			array("SEO Definice","line-dot","Splitter","#FF0000"),
+			array("Klíčová slova","meta_keywords","TwoLines",2000,false,true),
+			array("Meta description","meta_description","ShortText",200,false,true)
+		);
+	}
+}

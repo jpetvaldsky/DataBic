@@ -1,0 +1,14 @@
+<?php
+class Modul_113 {
+	function Modul_113 (){
+		$this->name = "Skupiny souborů (Downloads)";
+		$this->superadmin = false;
+		$this->service = false;
+		$this->items = array(
+			array("Název skupiny","title","TextRow",255,false,true),		
+			array("Krátký popis","text_content","ShortText",5000,false,true),
+			array("","line-dot","Splitter","#FF0000"),			
+			array("Soubory ke stažení","files","Linked",255,true,true,"files",1)			
+		);
+	}
+}
